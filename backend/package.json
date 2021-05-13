@@ -1,0 +1,22 @@
+{
+  "name": "ivcreator-backend",
+  "version": "1.0.0",
+  "description": "Intro Video Creator",
+  "main": "backend.js",
+  "scripts": {
+    "start": "node backend.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Will4950/IVCreator.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Will4950/IVCreator/issues"
+  },
+  "homepage": "https://github.com/Will4950/IVCreator#readme",
+  "dependencies": {
+    "dotenv": "^9.0.0"
+  }
+}

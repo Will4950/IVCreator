@@ -1,0 +1,11 @@
+- var dvtext = 'text_4Slide_' + val
+.col
+    .card.iv-card
+        label.card-header.bg-primary.text-white.form-label(for=dvtext)
+            if val == 1
+                | Meeting Title
+            if val == 2
+                | Meeting Subtitle
+        .card-body
+            - var obj = docs[0]
+            input.form-control.my-1(onchange='text4Slide(this);' value=obj[dvtext] id=dvtext)

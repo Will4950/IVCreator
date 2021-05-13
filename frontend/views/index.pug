@@ -1,0 +1,30 @@
+extends base.pug
+block body
+  .text-center
+    h1.display-4.fw-bold 
+      img.me-1.pb-3(src='clapper.png' width='62' height='62' alt='logo')
+      |  Intro Video Creator
+    .col-lg-12.mx-auto
+      if authorized
+        p.lead
+          | Click Jobs to view the current job queue and download past jobs.  Click templates to see available templates.
+        p Only 1 job will run at a time.  Jobs are processed on a LIFO basis.
+        p Only 1 job download is stored at a time.  
+        p.mb-4 Queueing a new job will immediately remove the old job.
+        .d-grid.gap-2.d-sm-flex.justify-content-sm-center.mb-5
+          a.btn.btn-primary.btn-lg.px-4.me-sm-3(role='button' href='/jobs') 
+            i.bi-clipboard-data.pe-2
+            |  Jobs
+          a.btn.btn-info.text-white.btn-lg.px-4.me-sm-3(role='button' href='/4Slide') 
+            i.bi-briefcase.pe-2
+            |  Templates
+      else
+        p.lead.mb-4
+          | Login to continue.
+        .d-grid.gap-2.d-sm-flex.justify-content-sm-center.mb-5
+          a.btn.btn-info.text-white.btn-lg.px-4.me-sm-3(role='button' href='/login') 
+            i.bi-box-arrow-in-right.pe-2
+            |  Login
+    .overflow-hidden(style='max-height: 30vh;')
+      .container.px-5
+        img.img-fluid.border.rounded-3.shadow-lg.mb-4(src='clapper.jpg' width='700' height='500' loading='lazy')

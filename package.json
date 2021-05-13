@@ -1,0 +1,28 @@
+{
+  "name": "ivcreator",
+  "version": "1.0.0",
+  "description": "IVCreator - Intro Video Creator",
+  "scripts": {
+    "start": "concurrently \"cd frontend && node frontend.js\" \"cd backend && node backend.js\"",
+    "start:frontend": "cd frontend && node frontend.js",
+    "start:backend": "cd backend && node backend.js",
+    "clean:all": "node clean.js",
+    "clean:server": "cd backend && nexrender-server-win64.exe --cleanup",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Will4950/IVCreator.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Will4950/IVCreator/issues"
+  },
+  "homepage": "https://github.com/Will4950/IVCreator#readme",
+  "devDependencies": {
+    "concurrently": "^5.1.0"
+  },
+  "dependencies": {}
+}

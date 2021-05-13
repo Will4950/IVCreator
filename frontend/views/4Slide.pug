@@ -1,0 +1,40 @@
+extends base.pug
+block body
+    include auth
+    script.
+        $(()=>{getJobs('4Slide');setInterval(getJobs, 10000, '4Slide');}) 
+    .container.text-center.mb-1
+        h1.display-4.fw-bold 
+            i.bi-camera-reels.pe-2
+            |  4 Slide Intro
+        .col-lg-10.mx-auto
+            p.lead.mb-4
+                | An exciting 4 slide template welcoming guests and introducing your team.  Changes are saved automatically.  Click 'Create Job' to render.
+                br
+                br
+                | Slides: 1920 x 1080 | Logo: 620 x 220 (preview may look streched)
+                br
+                i.bi-clock-history.pe-2 
+                | Full time: ~60min | Short time: ~20min
+        .overflow-hidden(style='max-height: 30vh;')
+            .container.px-5
+                img.img-fluid.border.rounded-3.shadow-lg.mb-4(src='4Slide.png' width='700' height='500' loading='lazy')
+    .container.d-grid.justify-content-sm-center.py-3.bg-light.rounded-top
+        h3.fw-bold.text-center 
+            i.bi-card-list.pe-2
+            |  Template Settings
+        .row.justify-content-center.mb-2
+            each val in [1,2]
+                include 4Slide-card-text
+    .container.d-grid.justify-content-sm-center.bg-light.rounded-bottom
+        each val in [1,3]
+            .row.justify-content-center.mb-3
+                include 4Slide-card-image
+                - val++
+                include 4Slide-card-image
+    .container.d-grid.mt-3.mb-2
+        p#jobinfo.text-center.lead.mb-2.mt-2            
+        button#jobbutton.btn.btn-success.d-none(onclick='createJob("4Slide");setTimeout(()=>{location.href="/jobs"}, 10);') Create Job - Full with Music
+        br
+        button#jobbutton2.btn.btn-success.d-none(onclick='createJob("4Slides");setTimeout(()=>{location.href="/jobs"}, 10);') Create Job - Short with no Music (reduced job time)
+    br

@@ -1,0 +1,26 @@
+a.navbar-brand(href='/')
+    img.me-1.pb-2(src='clapper.png' width='35' height='40' alt='logo')
+    |  Intro Video Creator
+.navbar-nav.ms-auto
+    if authorized
+        .nav-item.pe-1
+            a.nav-link(href='/jobs')
+                i.bi-clipboard-data.pe-2
+                | Jobs
+        .nav-item.dropdown.pe-1
+            a#navbarDropdown.nav-link.dropdown-toggle(href='#' role='button' data-bs-toggle='dropdown' aria-expanded='false')
+                i.bi-briefcase.pe-2
+                | Templates
+            .dropdown-menu(aria-labelledby='navbarDropdown')
+                a.dropdown-item(href='/4Slide') 
+                    i.bi-camera-reels.pe-2
+                    | 4 Slide Intro
+        .nav-item 
+            a.nav-link(href='/Logout')
+                i.bi-box-arrow-in-left.pe-2
+                | Logout
+    else
+        .nav-item
+            a.nav-link(href='/login')
+                i.bi-box-arrow-in-right.pe-2
+                | Login

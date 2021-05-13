@@ -1,0 +1,24 @@
+extends base.pug
+block body
+    include auth 
+    script.
+        $(()=>{getJobs('jobs');setInterval(getJobs, 10000, 'jobs');})        
+    h1.display-4.fw-bold.text-center 
+        i.bi-clipboard-data.pe-2
+        |  Jobs
+    .container.d-grid.justify-content-sm-center
+        .row
+            .col
+                .card(style='width: 500px;').text-center
+                    h5.card-header.bg-danger.text-white
+                        #jobheader
+                    .card-body
+                        h5.card-title
+                            p#jobstatus
+                        p#jobid
+                        p.card-text
+                            .progress.pbar
+                                #progress.progress-bar.progress-bar-striped.progress-bar-animated(role='progressbar') 
+                                    #progval.me-1(style='text-align: right;')
+                        a#download.btn.btn-success.d-none(role='button') Download
+    br
