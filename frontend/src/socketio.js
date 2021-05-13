@@ -84,7 +84,7 @@ io.on('connection', (socket) => {
                 case '4Slide':
                     template  = {
                         "src": config.tsrc,
-                        "composition": "Preview 2"
+                        "composition": "Opener Final Comp w/ Music"
                     }
                     break;
             } 
