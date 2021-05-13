@@ -1,9 +1,9 @@
 const http = require('http');
 const io = require('socket.io')();
-var ss = require('@sap_oss/node-socketio-stream');
+const ss = require('@sap_oss/node-socketio-stream');
 const he = require('he');
-const { Readable } = require('stream');
 const sharp = require('sharp');
+const { Readable } = require('stream');
 const logger = require('src/logger');
 const db = require('src/db');
 const config = require('./config');
@@ -19,32 +19,38 @@ io.on('connection', (socket) => {
     ss(socket).on('ss-update-file_4Slide', (stream, data) => {
         logger.debug('ss-update-file_4Slide: ' + data.sub + ' ' + data.image);
         
-        var file = '';
-        var readable = Readable.from(stream);
-        readable.on('error', (e) => {
-            logger.debug('ss-update-file_4Slide: ' + e);
-        })
-        readable.on('data', (chunk) => {
-            file += chunk;
-        })
-        readable.on('end', () =>{
-            var front = file.split(',')[0]
-            var back = file.split(',')[1];
-            var img = Buffer.from(back, 'base64');
-            var width=1920, height=1080;
-            switch(data.image){
-                case 'file_4Slide_4':
-                    width = 620;
-                    height = 220;
-                default:             
-                    sharp(img).resize({width: width, height: height, fit: 'inside'}).toBuffer()
-                    .then((imgrs)=>{
-                        db.update({sub: data.sub}, {$set: {[data.image]: front + ',' + imgrs.toString('base64')}}, {}, (err, numrep) => {
-                            logger.debug('update-file_4Slide docs changed: ' + numrep);
-                        });                            
-                    }).catch(e => {logger.error('sharp: ' + e)});                    
+        var width, height;
+        switch(data.image){
+            case 'file_4Slide_4':
+                width = 620;
+                height = 220;
+                break;
+            default:
+                width = 1920;
+                height = 1080;
         }
-            
+
+        var sharpTransformOptions = {width: width, height: height, fit: 'inside'};
+        var sharpTransform = sharp().resize(sharpTransformOptions);
+
+        var readable = Readable.from(stream);
+        readable.pipe(sharpTransform).toBuffer((err, buffer, info) => {
+            var img = 'data:image/' + info.format + ';base64,' + buffer.toString('base64');
+            db.update({sub: data.sub}, {$set: {[data.image]: img}}, {}, (err, numrep) => {
+                logger.debug('update-file_4Slide docs changed: ' + numrep);
+                io.to(sid).emit('image', {
+                    img: data.image,
+                    src: img
+                });
+            });
+        });
+
+        readable.on('error', (e)=>{
+            console.error('stream: ' + e);
+        })
+
+        sharpTransform.on('error', (e)=>{
+            console.error('sharp: ' + e);
         })
     });    
 
@@ -57,7 +63,7 @@ io.on('connection', (socket) => {
 
     socket.on('getJobs', (data) => {
         logger.debug('getJobs: ' + data.sub + ' : ' + data.page);
-        var job = '';
+        var job;
         db.find({sub: data.sub}, (err, docs) => {
             if(docs.length){ job = docs[0].job };            
             getJob(job, sid, data.page);            
@@ -67,121 +73,38 @@ io.on('connection', (socket) => {
     socket.on('createJob', (data) => {
         logger.debug('createJob: ' + data.sub + ' ' + data.page);        
         db.find({sub: data.sub}, (err, docs) => {
-            var jobjson = '';
+            var jobjson,template, assets, postrender;            
             switch (data.page){
-                case '4Slide':
-                        jobjson = {
-                            "template": {
-                            "src": config.tsrc,
-                            "composition": config.comp
-                            },
-                            "assets": [
-                                {
-                                    "src": docs[0].file_4Slide_4,
-                                    "type": "image",
-                                    "layerName": "SCRIPT LOGO"
-                                },
-                                {
-                                    "src": docs[0].file_4Slide_1,
-                                    "type": "image",
-                                    "layerName": "SCRIPT SLIDE1"
-                                },
-                                {
-                                    "src": docs[0].file_4Slide_2,
-                                    "type": "image",
-                                    "layerName": "SCRIPT SLIDE2"
-                                },
-                                {
-                                    "src": docs[0].file_4Slide_3,
-                                    "type": "image",
-                                    "layerName": "SCRIPT SLIDE3"
-                                },
-                                {
-                                    "type": "data",
-                                    "layerName": "SCRIPT MEETING LINE 1",
-                                    "property": "Source Text",
-                                    "value": he.decode(docs[0].text_4Slide_1)
-                                },
-                                {
-                                    "type": "data",
-                                    "layerName": "SCRIPT MEETING LINE 2",
-                                    "property": "Source Text",
-                                    "value": he.decode(docs[0].text_4Slide_2)
-                                }
-                            ],
-                            "actions": {
-                                "postrender": [
-                                    {
-                                    "module": "@nexrender/action-encode",
-                                    "preset": "mp4",
-                                    "output": "encoded.mp4"
-                                    },
-                                    {
-                                    "module": "@nexrender/action-copy",
-                                    "input": "encoded.mp4",
-                                    "output": config.output + docs[0].sub + ".mp4"
-                                    }
-                                ]
-                            }
-                        }
-                    break;
                 case '4Slides':
-                        jobjson = {
-                            "template": {
-                            "src": config.tsrc,
-                            "composition": 'Opener Final Comp'
-                            },
-                            "assets": [
-                                {
-                                    "src": docs[0].file_4Slide_4,
-                                    "type": "image",
-                                    "layerName": "SCRIPT LOGO"
-                                },
-                                {
-                                    "src": docs[0].file_4Slide_1,
-                                    "type": "image",
-                                    "layerName": "SCRIPT SLIDE1"
-                                },
-                                {
-                                    "src": docs[0].file_4Slide_2,
-                                    "type": "image",
-                                    "layerName": "SCRIPT SLIDE2"
-                                },
-                                {
-                                    "src": docs[0].file_4Slide_3,
-                                    "type": "image",
-                                    "layerName": "SCRIPT SLIDE3"
-                                },
-                                {
-                                    "type": "data",
-                                    "layerName": "SCRIPT MEETING LINE 1",
-                                    "property": "Source Text",
-                                    "value": he.decode(docs[0].text_4Slide_1)
-                                },
-                                {
-                                    "type": "data",
-                                    "layerName": "SCRIPT MEETING LINE 2",
-                                    "property": "Source Text",
-                                    "value": he.decode(docs[0].text_4Slide_2)
-                                }
-                            ],
-                            "actions": {
-                                "postrender": [
-                                    {
-                                    "module": "@nexrender/action-encode",
-                                    "preset": "mp4",
-                                    "output": "encoded.mp4"
-                                    },
-                                    {
-                                    "module": "@nexrender/action-copy",
-                                    "input": "encoded.mp4",
-                                    "output": config.output + docs[0].sub + ".mp4"
-                                    }
-                                ]
-                            }
-                        }
+                    template  = {
+                        "src": config.tsrc,
+                        "composition": "Opener Final Comp"
+                    }
                     break;
-            }            
+                case '4Slide':
+                    template  = {
+                        "src": config.tsrc,
+                        "composition": "Preview 2"
+                    }
+                    break;
+            } 
+            assets = [];
+            assets.push({"src": docs[0].file_4Slide_4, "type": "image", "layerName": "SCRIPT LOGO"});
+            assets.push({"src": docs[0].file_4Slide_1, "type": "image","layerName": "SCRIPT SLIDE1"});
+            assets.push({"src": docs[0].file_4Slide_2, "type": "image","layerName": "SCRIPT SLIDE2"});
+            assets.push({"src": docs[0].file_4Slide_3, "type": "image","layerName": "SCRIPT SLIDE3"});
+            assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 1","property": "Source Text","value": he.decode(docs[0].text_4Slide_1)});
+            assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 2","property": "Source Text","value": he.decode(docs[0].text_4Slide_2)});
+            postrender=[];
+            postrender.push({"module": "@nexrender/action-encode", "preset": "mp4","output": "encoded.mp4"});
+            postrender.push({"module": "@nexrender/action-copy", "input": "encoded.mp4", "output": config.output + docs[0].sub + ".mp4"});
+
+            jobjson = {};
+            jobjson.template = template;
+            jobjson.assets = assets;
+            jobjson.actions = {};
+            jobjson.actions.postrender = postrender;
+            
             postJob(data.sub, jobjson);
         });
     });

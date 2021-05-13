@@ -12,10 +12,9 @@
             if val == 4
                 | Slide #{val} : Logo 620x220
         .card-body
-            div(id=slidel)
-                - var key = 'file_4Slide_' + val
-                - var obj = docs[0]
-                img.rounded-3.pimg(src=obj[key])
+            - var key = 'file_4Slide_' + val
+            - var obj = docs[0]
+            img.rounded-3.pimg(src=obj[key] id=slidel)
         .card-footer
             .d-grid
                 label.btn.btn-info.text-white(for=islidel) Change Image

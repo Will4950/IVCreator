@@ -1,24 +1,15 @@
 const socket = io();
+var reader = new FileReader();
 
 const image4Slide = (input) => {
     if (input.files && input.files[0]) {        
-        var reader = new FileReader();
-        var div = $('#' + input.getAttribute('sid'));
-        div.html('');
-        reader.onload = (e) => {
-            var img = $('<img />');
-            img.attr('class', 'pimg')
-            img.attr('src', e.target.result);
-            div.append(img);
-            var stream = ss.createStream();                
-            ss(socket).emit('ss-update-file_4Slide', stream, {                    
-                sub: sub,
-                image: 'file_4Slide_' + parseInt(input.getAttribute('sid').match(/\d+$/)[0], 10),
-            });
-            stream.write(e.target.result);
-            stream.end();           
-        };
-        reader.readAsDataURL(input.files[0]);
+        var stream = ss.createStream();
+        var blobstream = ss.createBlobReadStream(input.files[0])                
+        ss(socket).emit('ss-update-file_4Slide', stream, {                    
+            sub: sub,
+            image: 'file_4Slide_' + parseInt(input.getAttribute('sid').match(/\d+$/)[0], 10),
+        });
+        blobstream.pipe(stream);
     }
 };
 
@@ -43,6 +34,11 @@ const getJobs = (page) => {
         page: page
     });
 };
+
+socket.on('image', (data) => {
+    var dvimage = $('#slide' + parseInt(data.img.match(/\d+$/)[0], 10));
+    dvimage.attr('src', data.src);
+})
 
 socket.on('jobs', (data) => {
     switch(data.page){
