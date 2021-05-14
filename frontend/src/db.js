@@ -8,7 +8,7 @@ db.on('compaction.done', () =>{
     logger.silly('db: compaction.done');
 });
 
-jobs_db.persistence.setAutocompactionInterval(60000);
+jobs_db.persistence.setAutocompactionInterval(5050);
 jobs_db.on('compaction.done', () =>{
     logger.silly('jobs_db: compaction.done');
 });
