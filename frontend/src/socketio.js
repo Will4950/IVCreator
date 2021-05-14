@@ -5,7 +5,8 @@ const he = require('he');
 const sharp = require('sharp');
 const { Readable } = require('stream');
 const logger = require('src/logger');
-const db = require('src/db');
+const db = require('src/db').db;
+const jobs_db = require('src/db').jobs_db;
 const config = require('./config');
 
 const socketapi = {
@@ -63,8 +64,11 @@ io.on('connection', (socket) => {
         logger.debug('getJobs: ' + data.sub + ' : ' + data.page);
         var job;
         db.find({sub: data.sub}, (err, docs) => {
-            if(docs.length){ job = docs[0].job };            
-            getJob(job, sid, data.page);            
+            if(docs.length){ 
+                job = docs[0].job; 
+                getJob(job, sid, data.page);
+            };            
+                        
         });
     });
 
@@ -135,6 +139,7 @@ const postJob = (sub, job) => {
             logger.debug('createJob sub: ' + sub + 'uid: ' + a.uid);
             db.update({sub: sub}, {$set: {job: a.uid}}, {}, (err, numrep) => {
                 logger.debug('postJob docs changed: ' + numrep);
+                getJobs();
             });    
         });
     }
@@ -153,7 +158,7 @@ const postJob = (sub, job) => {
     req.end();
 };
 
-const getJob = (job, sid, page) =>{
+const getJobs = () =>{
     const options = {
         method: 'GET',
         hostname: config.nexrender.host,
@@ -176,15 +181,16 @@ const getJob = (job, sid, page) =>{
             try {
                 var a = JSON.parse(str);
             } catch(e) {
-                logger.error('getJob: ' + e);
+                logger.error('getJobs: ' + e);
             }
 
-            var qjobs = a.reduce((n, x) => n + (x.state === 'queued'), 0);
-            var cjob = a.filter(c => c.uid === job);
-            io.to(sid).emit('jobs', {
-                qjobs: qjobs,
-                cjob: cjob,
-                page: page
+            jobs_db.find({sub: 'main'}, (err, docs) => {
+                if(docs.length == 0){
+                    jobs_db.insert({sub: 'main', a: a});
+                }
+                else {
+                    jobs_db.update({sub: 'main'}, {$set: {a: a}}, {});
+                }
             });
         });
     }
@@ -195,5 +201,23 @@ const getJob = (job, sid, page) =>{
     });
     req.end();
 }
+
+const getJob = (job, sid, page) =>{
+    jobs_db.find({sub: 'main'}, (err, docs) => {
+        if(docs.length){ 
+            var a = docs[0].a 
+            var qjobs = a.reduce((n, x) => n + (x.state === 'queued'), 0);
+            var cjob = a.filter(c => c.uid === job);
+            io.to(sid).emit('jobs', {
+                qjobs: qjobs,
+                cjob: cjob,
+                page: page
+            });          
+        }
+    });
+}
+
+getJobs();
+setInterval(getJobs, 5000);
 
 module.exports = socketapi;

@@ -1,6 +1,5 @@
 const config = require('src/config');
-const logger = require('src/logger');
-const db = require('src/db');
+const db = require('src/db').db;
 const ExpressOIDC = require('@okta/oidc-middleware').ExpressOIDC;
 
 const oidc = new ExpressOIDC({
@@ -21,13 +20,10 @@ const authroute = (req, res, route) => {
     if (req.userContext) {
         if(req.userContext.userinfo) {
             const userinfo = req.userContext && req.userContext.userinfo;
-            const attributes = Object.entries(userinfo);
-            
+            const attributes = Object.entries(userinfo); 
             var sub = userinfo.sub;
-            logger.debug('sub: ' + sub);            
             var doc = config.doc;
             doc['sub'] = sub;
-
             db.find({sub: sub}, (err, docs) =>{
                 if (docs.length == 0) {
                     db.insert(doc, (err, newDoc) => {
@@ -37,7 +33,7 @@ const authroute = (req, res, route) => {
                             attributes,
                             docs: newDoc
                         });
-                    });
+                    });                    
                 }
                 else {
                     res.render(route, { 
@@ -47,7 +43,7 @@ const authroute = (req, res, route) => {
                         docs: docs
                     });
                 }
-            });            
+            });
         }
     } else {
         res.render(route, { 

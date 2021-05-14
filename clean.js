@@ -6,6 +6,7 @@ fs.rmdir('frontend/logs',{recursive:true},err=>{return;});
 fs.rm('frontend/stylesheets/bootstrap.css.map',err=>{return;});
 fs.rm('frontend/stylesheets/bootstrap.css',err=>{return;});
 fs.rm('frontend/db/frontend.db',err=>{return;});
+fs.rm('frontend/db/frontend-jobs.db',err=>{return;});
 
 var exec = require('child_process').execFile;
 var server = exec('backend/nexrender-server-win64.exe', ['--cleanup']);

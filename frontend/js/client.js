@@ -68,7 +68,7 @@ socket.on('jobs', (data) => {
                 dvprogress.addClass('bg-warning');
             } else {
                 dvjobstatus.html('Job status: ' + data.cjob[0].state);
-                dvjobid.html('job id: ' + data.cjob[0].uid)
+                dvjobid.html('Job id: [' + data.cjob[0].uid + ']')
                 if (data.cjob[0].renderProgress){
                     dvprogval.html(data.cjob[0].renderProgress + '%');
                     dvprogress.attr('style', 'width: ' + data.cjob[0].renderProgress + '%;');
