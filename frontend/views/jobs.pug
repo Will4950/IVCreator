@@ -2,7 +2,7 @@ extends base.pug
 block body
     include auth 
     script.
-        $(()=>{getJobs('jobs');setInterval(getJobs, 1000, 'jobs');})        
+        $(()=>{getJobs('jobs');setInterval(getJobs, 10000, 'jobs');})        
     h1.display-4.fw-bold.text-center 
         i.bi-clipboard-data.pe-2
         |  Jobs
