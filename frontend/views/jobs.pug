@@ -9,7 +9,8 @@ block body
     .container.d-grid.justify-content-sm-center
         .row
             .col
-                .card(style='width: 500px;').text-center
+                #jobspin.spinner-grow.text-primary(style="width: 204px; height: 204px;" role='status')
+                #jobcard.card.d-none(style='width: 500px;').text-center
                     h5.card-header.bg-danger.text-white
                         #jobheader
                     .card-body

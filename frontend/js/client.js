@@ -51,18 +51,16 @@ socket.on('image', (data) => {
 socket.on('jobs', (data) => {
     switch(data.page){
         case 'jobs':
-            var dvheader = $('#jobheader');
+            var dvjobheader = $('#jobheader');
             var dvjobstatus = $('#jobstatus');
             var dvjobid = $('#jobid');
             var dvprogress = $('#progress');
             var dvprogval = $('#progval');
-            var dvdownload = $('#download');    
-
-            dvprogress.removeClass('bg-warning');
-            dvprogress.addClass('bg-success');
-            dvheader.html(data.qjobs + ' jobs in queue');            
+            var dvdownload = $('#download');
+            
+            dvjobheader.html(data.qjobs + ' jobs in queue');
             if(!data.cjob[0]){
-                dvprogval.html('');
+                dvprogval.html('');                 
                 dvprogress.attr('style', 'width: 100%;');
                 dvprogress.removeClass('bg-success');
                 dvprogress.addClass('bg-warning');
@@ -72,7 +70,7 @@ socket.on('jobs', (data) => {
                 if (data.cjob[0].renderProgress){
                     dvprogval.html(data.cjob[0].renderProgress + '%');
                     dvprogress.attr('style', 'width: ' + data.cjob[0].renderProgress + '%;');
-                }                                
+                } 
                 switch(data.cjob[0].state) {
                     case 'finished':
                         dvprogval.html('complete');
@@ -99,8 +97,11 @@ socket.on('jobs', (data) => {
                         dvprogress.addClass('bg-warning');                        
                 }
             }
+
+            $('#jobspin').addClass('d-none');
+            $('#jobcard').removeClass('d-none');           
             break;
-        default:
+        default: //assume template page
             var dvjobinfo = $('#jobinfo');
             var dvjobbuttons = $('#jobbuttons');
             if(!data.cjob[0]){
