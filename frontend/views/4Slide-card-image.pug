@@ -14,7 +14,9 @@
         .card-body
             - var key = 'file_4Slide_' + val
             - var obj = docs[0]
-            img.rounded-3.pimg(src=obj[key] id=slidel)
+                img.rounded-3.pimg(src=obj[key] id=slidel)
+                .text-center
+                    .spinner-grow.text-primary.d-none(style="width: 169px; height: 169px;" role='status' id=slidel + 'spin')
         .card-footer
             .d-grid.shadow
                 label.btn.btn-info.text-white(for=islidel) Change Image

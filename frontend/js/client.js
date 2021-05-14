@@ -2,6 +2,11 @@ const socket = io();
 var reader = new FileReader();
 
 const image4Slide = (input) => {
+    var dvimage = $('#slide' + parseInt(input.getAttribute('sid').match(/\d+$/)[0], 10));
+    var dvspin = $('#slide' + parseInt(input.getAttribute('sid').match(/\d+$/)[0], 10) + 'spin');
+    dvspin.removeClass('d-none');
+    dvimage.addClass('d-none');    
+
     if (input.files && input.files[0]) {        
         var stream = ss.createStream();
         var blobstream = ss.createBlobReadStream(input.files[0])                
@@ -37,6 +42,9 @@ const getJobs = (page) => {
 
 socket.on('image', (data) => {
     var dvimage = $('#slide' + parseInt(data.img.match(/\d+$/)[0], 10));
+    var dvspin = $('#slide' + parseInt(data.img.match(/\d+$/)[0], 10) + 'spin');
+    dvimage.removeClass('d-none');
+    dvspin.addClass('d-none');
     dvimage.attr('src', data.src);
 })
 
