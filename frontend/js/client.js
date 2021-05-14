@@ -58,6 +58,8 @@ socket.on('jobs', (data) => {
             var dvprogval = $('#progval');
             var dvdownload = $('#download');
             
+            dvprogress.removeClass('bg-warning');
+            dvprogress.addClass('bg-success');
             dvjobheader.html(data.qjobs + ' jobs in queue');
             if(!data.cjob[0]){
                 dvprogval.html('');                 
