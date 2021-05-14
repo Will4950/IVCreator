@@ -1,6 +1,6 @@
 extends base.pug
 block body
-  .text-center
+  .text-center.pb-1.mb-4.shadow.pt-2
     h1.display-4.fw-bold 
       img.me-1.pb-3(src='clapper.png' width='62' height='62' alt='logo')
       |  Intro Video Creator
@@ -15,9 +15,10 @@ block body
           a.btn.btn-primary.btn-lg.px-4.me-sm-3(role='button' href='/jobs') 
             i.bi-clipboard-data.pe-2
             |  Jobs
-          a.btn.btn-info.text-white.btn-lg.px-4.me-sm-3(role='button' href='/4Slide') 
+          a.btn.btn-info.text-white.btn-lg.px-4.me-sm-3.dropdown-toggle(href='#' role='button' data-bs-toggle='dropdown')
             i.bi-briefcase.pe-2
             |  Templates
+          include dd-templates.pug
       else
         p.lead.mb-4
           | Login to continue.
@@ -25,6 +26,5 @@ block body
           a.btn.btn-info.text-white.btn-lg.px-4.me-sm-3(role='button' href='/login') 
             i.bi-box-arrow-in-right.pe-2
             |  Login
-    .overflow-hidden(style='max-height: 30vh;')
-      .container.px-5
-        img.img-fluid.border.rounded-3.shadow-lg.mb-4(src='clapper.jpg' width='700' height='500' loading='lazy')
+    .container
+      video.border.rounded-3.shadow-lg.mb-4(src='ivcreator.mp4' width='700' height='394' type='video/mp4' autoplay muted loop)

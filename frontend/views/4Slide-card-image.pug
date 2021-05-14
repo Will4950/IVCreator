@@ -1,7 +1,7 @@
 - var slidel = 'slide' + val
 - var islidel = 'islide' + val
 .col
-    .card.iv-card
+    .card.iv-card.shadow
         .card-header.bg-primary.text-white
             if val == 1
                 | Slide #{val} : Welcome
@@ -16,6 +16,6 @@
             - var obj = docs[0]
             img.rounded-3.pimg(src=obj[key] id=slidel)
         .card-footer
-            .d-grid
+            .d-grid.shadow
                 label.btn.btn-info.text-white(for=islidel) Change Image
                 input.form-contol(onchange='image4Slide(this);' type='file' accept='image/*' style='visibility: hidden; display: none;' sid=slidel id=islidel)

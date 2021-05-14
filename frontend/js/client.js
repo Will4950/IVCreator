@@ -94,19 +94,16 @@ socket.on('jobs', (data) => {
             break;
         default:
             var dvjobinfo = $('#jobinfo');
-            var dvjobbutton = $('#jobbutton');
-            var dvjobbutton2 = $('#jobbutton2');
+            var dvjobbuttons = $('#jobbuttons');
             if(!data.cjob[0]){
-                dvjobinfo.html('If it looks good, click the button.');
-                dvjobbutton.removeClass('d-none');
-                dvjobbutton2.removeClass('d-none');
+                dvjobinfo.html('If it looks good, click a button.');
+                dvjobbuttons.removeClass('d-none');
             } else {
                 switch(data.cjob[0].state) {
                     case 'error':
                     case 'finished':
-                        dvjobinfo.html('To create a new render, click the button.');
-                        dvjobbutton.removeClass('d-none');
-                        dvjobbutton2.removeClass('d-none');
+                        dvjobinfo.html('To create a new render, click a button.');
+                        dvjobbuttons.removeClass('d-none');
                         break;
                     default:
                         dvjobinfo.html('You have a job in the queue.  Only 1 job is allowed at a time.');
@@ -114,3 +111,4 @@ socket.on('jobs', (data) => {
             }
     }       
 });
+

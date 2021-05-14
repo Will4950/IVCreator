@@ -22,12 +22,10 @@ io.on('connection', (socket) => {
         var width, height;
         switch(data.image){
             case 'file_4Slide_4':
-                width = 620;
-                height = 220;
+                width = 620; height = 220;
                 break;
             default:
-                width = 1920;
-                height = 1080;
+                width = 1920; height = 1080;
         }
 
         var sharpTransformOptions = {width: width, height: height, fit: 'inside'};
@@ -75,17 +73,13 @@ io.on('connection', (socket) => {
         db.find({sub: data.sub}, (err, docs) => {
             var jobjson,template, assets, postrender;            
             switch (data.page){
-                case '4Slides':
-                    template  = {
-                        "src": config.tsrc,
-                        "composition": "Opener Final Comp"
-                    }
+                case '4Slide': template  = {"src": config.tsrc, "composition": "Opener Final Comp w/ Music"}
                     break;
-                case '4Slide':
-                    template  = {
-                        "src": config.tsrc,
-                        "composition": "Opener Final Comp w/ Music"
-                    }
+                case '4Slides': template  = {"src": config.tsrc, "composition": "Opener Final Comp"}
+                    break;
+                case '4Slidea': template  = {"src": config.asrc, "composition": "Opener Final Comp w/ Music"}
+                    break;                
+                case '4Slideas': template  = {"src": config.asrc, "composition": "Opener Final Comp"}
                     break;
             } 
             assets = [];
@@ -95,6 +89,8 @@ io.on('connection', (socket) => {
             assets.push({"src": docs[0].file_4Slide_3, "type": "image","layerName": "SCRIPT SLIDE3"});
             assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 1","property": "Source Text","value": he.decode(docs[0].text_4Slide_1)});
             assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 2","property": "Source Text","value": he.decode(docs[0].text_4Slide_2)});
+            assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 3","property": "Source Text","value": he.decode(docs[0].text_4Slide_3)});
+            assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 4","property": "Source Text","value": he.decode(docs[0].text_4Slide_4)});
             postrender=[];
             postrender.push({"module": "@nexrender/action-encode", "preset": "mp4","output": "encoded.mp4"});
             postrender.push({"module": "@nexrender/action-copy", "input": "encoded.mp4", "output": config.output + docs[0].sub + ".mp4"});
@@ -136,8 +132,7 @@ const postJob = (sub, job) => {
             } catch(e) {
                 logger.error('postJob: ' + e);
             }
-            logger.debug('createJob uid: ' + a.uid);
-            logger.debug('createJob sub: ' + sub);             
+            logger.debug('createJob sub: ' + sub + 'uid: ' + a.uid);
             db.update({sub: sub}, {$set: {job: a.uid}}, {}, (err, numrep) => {
                 logger.debug('postJob docs changed: ' + numrep);
             });    
@@ -186,9 +181,6 @@ const getJob = (job, sid, page) =>{
 
             var qjobs = a.reduce((n, x) => n + (x.state === 'queued'), 0);
             var cjob = a.filter(c => c.uid === job);
-
-            logger.silly('cjob: ' + JSON.stringify(cjob));
-
             io.to(sid).emit('jobs', {
                 qjobs: qjobs,
                 cjob: cjob,
