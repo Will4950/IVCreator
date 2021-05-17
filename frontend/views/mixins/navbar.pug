@@ -8,6 +8,10 @@ nav.navbar.navbar-expand-md.navbar-dark.bg-primary.rounded-3.shadow
         #navbarItems.collapse.navbar-collapse
             .navbar-nav.ms-auto
                 if auth
+                    .nav-item 
+                        a.nav-link(href='/help')
+                            i.fas.fa-question-circle.pe-1
+                            | Help
                     .nav-item
                         a.nav-link(href='/jobs')
                             i.fas.fa-tasks.pe-1

@@ -6,7 +6,6 @@ const logger = require('src/logger');
 const {oidc, authmw} = require('src/auth');
 const {dbmw} = require('src/db');
 const fsmw = require('src/fs');
-const {socketmw} = require('src/io');
 
 const app = express();
 app.set('port', config.port);
@@ -34,7 +33,6 @@ app.use(oidc.router);
 app.use(authmw);
 app.use(dbmw);
 app.use(fsmw);
-app.use(socketmw);
 
 const reqrender = (template, res, req) => {
   res.render(template, {auth: req.auth, sub: req.sub, download: req.download, docs: req.docs, qjobs: req.qjobs, job: req.job});
@@ -54,6 +52,10 @@ app.get('/4Slide', oidc.ensureAuthenticated(), (req, res) => {
 
 app.get('/Welcome', oidc.ensureAuthenticated(), (req, res) => {
   reqrender('Welcome', res, req);
+});
+
+app.get('/help', oidc.ensureAuthenticated(), (req, res) => {  
+  reqrender('help', res, req);
 });
 
 app.get('/logout', (req, res,) => {

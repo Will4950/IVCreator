@@ -1,0 +1,25 @@
+extends mixins/layout.pug
+block main
+    .d-flex.flex-column.align-items-center.shadow.mb-2.px-2.rounded-3
+        div.px-1.pt-2
+            h1.display-4.fw-bold 
+                i.fas.fa-question-circle.pe-1
+                |  Help
+        div.text-center.px-2 
+            p.lead.mb-4
+                | Welcome to IVCreator help!  On this page you can find details that will help in the operation of IVCreator.  Please report any issues or bugs to Will Hughes.
+        div.text-center.px-2
+            p 
+                | Assets Template File: 
+                a(href='assets_template.pptx') Download
+                br
+                | This powerpoint can be used to help create the images needed for the different video templates. Modify the slides to your liking and take a screen capture to create an image.
+        div.text-center.px-2
+            p Note on resolutions:  Images will be resized to 1920x1080 or 620x220, in the case of a logo.  Resizing happens automatically and does not require any user intervention.
+                |  Aspect ratios will be preserved to prevent warping.  Images will fit to max-width or max-height depending on aspect ratio.
+        div.text-center.px-2
+            p Note on jobs:  There is currently only 1 worker node available to process jobs.  The global queue is limited to the number of workers available.  Please be patient if there are multiple jobs queued.
+        div.text-center.px-2
+            p Note on download: Queueing a new job will OVERWRITE your existing download on job completion.
+        .pb-2
+             

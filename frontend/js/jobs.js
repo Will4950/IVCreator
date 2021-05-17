@@ -1,5 +1,5 @@
 $(()=>{
-    refreshJobs();
+    setTimeout(refreshJobs, 250);
     setInterval(refreshJobs, 10000);
 });
 

@@ -8,13 +8,7 @@ const sharp = require('sharp');
 const he = require('he');
 const http = require('http');
 
-const socketapi = {
-    io: io, 
-    socketmw: (req, res, next) => {
-        req.io = io; 
-        next();
-    }
-};
+const socketapi = {io: io};
 
 io.on('connection', (socket) => {
     logger.debug('io: ' + socket.id)
