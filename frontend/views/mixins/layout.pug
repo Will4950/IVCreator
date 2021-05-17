@@ -1,0 +1,21 @@
+doctype html
+head
+  meta(charset='utf-8')
+  meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
+  link(rel='shortcut icon' type='image/x=icon' href='favicon.ico')
+  link(rel='stylesheet' href='compiled.css')
+  link(rel='stylesheet' href='client.css')
+  title IVCreator
+  script(src='jquery.js') 
+body
+  .container-fluid.maxWidth.py-2
+    include navbar.pug
+    div.py-3
+      block main
+    include footer.pug      
+  script(src='/socket.io/socket.io.js')
+  script(src='node-socketio-stream.js')  
+  script(src='client.js')
+  block script
+  script(src='popper.js')
+  script(src='bootstrap.js')

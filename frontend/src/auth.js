@@ -1,5 +1,4 @@
 const config = require('src/config');
-const db = require('src/db').db;
 const ExpressOIDC = require('@okta/oidc-middleware').ExpressOIDC;
 
 const oidc = new ExpressOIDC({
@@ -16,40 +15,9 @@ const oidc = new ExpressOIDC({
     scope: 'openid profile'
 });
 
-const authroute = (req, res, route) => {
-    if (req.userContext) {
-        if(req.userContext.userinfo) {
-            const userinfo = req.userContext && req.userContext.userinfo;
-            const attributes = Object.entries(userinfo); 
-            var sub = userinfo.sub;
-            var doc = config.doc;
-            doc['sub'] = sub;
-            db.find({sub: sub}, (err, docs) =>{
-                if (docs.length == 0) {
-                    db.insert(doc, (err, newDoc) => {
-                        res.render(route, { 
-                            authorized: !!userinfo,
-                            userinfo: userinfo,
-                            attributes,
-                            docs: newDoc
-                        });
-                    });                    
-                }
-                else {
-                    res.render(route, { 
-                        authorized: !!userinfo,
-                        userinfo: userinfo,
-                        attributes,
-                        docs: docs
-                    });
-                }
-            });
-        }
-    } else {
-        res.render(route, { 
-            authorized: false,
-        });
-    }
-};
+const authmw = (req, res, next) => {
+    req.auth = !!req.userContext;
+    next();
+}
 
-module.exports = {oidc, authroute};
+module.exports = {oidc, authmw};

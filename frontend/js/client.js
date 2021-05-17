@@ -1,125 +1,40 @@
 const socket = io();
-var reader = new FileReader();
+const reader = new FileReader();
 
-const image4Slide = (input) => {
-    var dvimage = $('#slide' + parseInt(input.getAttribute('sid').match(/\d+$/)[0], 10));
-    var dvspin = $('#slide' + parseInt(input.getAttribute('sid').match(/\d+$/)[0], 10) + 'spin');
-    dvspin.removeClass('d-none');
-    dvimage.addClass('d-none');    
+const upload_text = (input) => {
+    $('#' + input.getAttribute('id')).addClass('d-none');
+    $('#' + input.getAttribute('id') + '_spin').removeClass('d-none');
+    socket.emit('upload_text', {
+        value: input.value,
+        text: input.getAttribute('id'),
+        sub: input.getAttribute('sub')
+    });
+}
 
-    if (input.files && input.files[0]) {        
+const upload_image = (input) => {
+    $('#' + input.getAttribute('iid')).addClass('d-none');
+    $('#' + input.getAttribute('iid') + '_spin').removeClass('d-none');
+    if (input.files && input.files[0]) { 
         var stream = ss.createStream();
-        var blobstream = ss.createBlobReadStream(input.files[0])                
-        ss(socket).emit('ss-update-file_4Slide', stream, {                    
-            sub: sub,
-            image: 'file_4Slide_' + parseInt(input.getAttribute('sid').match(/\d+$/)[0], 10),
+        var blobstream = ss.createBlobReadStream(input.files[0])
+        ss(socket).emit('upload_image', stream, {                    
+            sub: input.getAttribute('sub'),
+            image: input.getAttribute('iid')
         });
         blobstream.pipe(stream);
     }
-};
+}
 
-const text4Slide = (input) => {
-    socket.emit('update-text_4Slide', {
-        sub: sub,
-        text: input.getAttribute('id'),
-        value: input.value
-    });
-};
-
-const createJob = (page) => {
+const createJob = (button) => {
     socket.emit('createJob', {
-        sub: sub,
-        page: page
+        sub: button.getAttribute('sub'),
+        template: button.getAttribute('template')
     });
-};
+}
 
-const getJobs = (page) => {
-    socket.emit('getJobs', {
-        sub: sub,
-        page: page
-    });
-};
-
-socket.on('image', (data) => {
-    var dvimage = $('#slide' + parseInt(data.img.match(/\d+$/)[0], 10));
-    var dvspin = $('#slide' + parseInt(data.img.match(/\d+$/)[0], 10) + 'spin');
-    dvimage.removeClass('d-none');
-    dvspin.addClass('d-none');
-    dvimage.attr('src', data.src);
-})
-
-socket.on('jobs', (data) => {
-    switch(data.page){
-        case 'jobs':
-            var dvjobheader = $('#jobheader');
-            var dvjobstatus = $('#jobstatus');
-            var dvjobid = $('#jobid');
-            var dvprogress = $('#progress');
-            var dvprogval = $('#progval');
-            var dvdownload = $('#download');
-            
-            dvprogress.removeClass('bg-warning');
-            dvprogress.addClass('bg-success');
-            dvjobheader.html(data.qjobs + ' jobs in queue');
-            if(!data.cjob[0]){
-                dvprogval.html('');                 
-                dvprogress.attr('style', 'width: 100%;');
-                dvprogress.removeClass('bg-success');
-                dvprogress.addClass('bg-warning');
-            } else {
-                dvjobstatus.html('Job status: ' + data.cjob[0].state);
-                dvjobid.html('Job id: [' + data.cjob[0].uid + ']')
-                if (data.cjob[0].renderProgress){
-                    dvprogval.html(data.cjob[0].renderProgress + '%');
-                    dvprogress.attr('style', 'width: ' + data.cjob[0].renderProgress + '%;');
-                } 
-                switch(data.cjob[0].state) {
-                    case 'finished':
-                        dvprogval.html('complete');
-                        dvprogress.attr('style', 'width: 100%;');
-                        dvdownload.attr('href', '/' + sub + '.mp4');
-                        dvdownload.removeClass('d-none');
-                        break;
-                    case 'queued':
-                        dvprogress.attr('style', 'width: 100%;');
-                        dvprogress.removeClass('bg-success');
-                        dvprogress.addClass('bg-warning');
-                        break;
-                    case 'render:dorender':
-                        if (data.cjob[0].renderProgress == 100){
-                            dvprogval.html('encoding');
-                            dvprogress.attr('style', 'width: 100%;');
-                            dvprogress.removeClass('bg-success');
-                            dvprogress.addClass('bg-warning');
-                        }
-                        break;
-                    default:
-                        dvprogval.html('');
-                        dvprogress.attr('style', 'width: 100%;');
-                        dvprogress.addClass('bg-warning');                        
-                }
-            }
-
-            $('#jobspin').addClass('d-none');
-            $('#jobcard').removeClass('d-none');           
-            break;
-        default: //assume template page
-            var dvjobinfo = $('#jobinfo');
-            var dvjobbuttons = $('#jobbuttons');
-            if(!data.cjob[0]){
-                dvjobinfo.html('If it looks good, click a button.');
-                dvjobbuttons.removeClass('d-none');
-            } else {
-                switch(data.cjob[0].state) {
-                    case 'error':
-                    case 'finished':
-                        dvjobinfo.html('To create a new render, click a button.');
-                        dvjobbuttons.removeClass('d-none');
-                        break;
-                    default:
-                        dvjobinfo.html('You have a job in the queue.  Only 1 job is allowed at a time.');
-                }
-            }
-    }       
+socket.on('createJob', (data) => {
+    if (data.status === 'ok'){
+        window.location.href = '/jobs';
+    }
 });
 

@@ -1,0 +1,28 @@
+nav.navbar.navbar-expand-md.navbar-dark.bg-primary.rounded-3.shadow
+    .container-fluid
+        a.navbar-brand(href='/')
+            i.fas.fa-film.pe-1
+            |  Intro Video Creator
+        button.navbar-toggler(type='button' data-bs-toggle='collapse' data-bs-target='#navbarItems')
+            span.navbar-toggler-icon
+        #navbarItems.collapse.navbar-collapse
+            .navbar-nav.ms-auto
+                if auth
+                    .nav-item
+                        a.nav-link(href='/jobs')
+                            i.fas.fa-tasks.pe-1
+                            | Jobs
+                    .nav-item.dropdown
+                        a#navbarDropdown.nav-link.dropdown-toggle(href='#' role='button' data-bs-toggle='dropdown')
+                            i.fas.fa-briefcase.pe-1
+                            | Templates
+                        include dd-templates.pug
+                    .nav-item 
+                        a.nav-link(href='/Logout')
+                            i.fas.fa-sign-out-alt.pe-1
+                            | Logout
+                else
+                    .nav-item
+                        a.nav-link(href='/login')
+                            i.fas.fa-sign-in-alt.pe-1
+                            | Login

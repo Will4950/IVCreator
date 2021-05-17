@@ -1,0 +1,14 @@
+div#status.tbut
+    if job
+        if job.state 
+            if job.state === 'finished' || job.state === 'error'
+                .px-2.py-2.pt-4
+                    p.text-center.lead.mb-2.mt-2 If it looks good, click a button.  This will overwrite any existing job download when completed.
+                include 4Slide-buttons.pug
+            else 
+                .px-2.py-2.pt-4
+                    p.text-center.lead.mb-2.mt-2 You have a job in the queue.  Only 1 job is allowed at a time.
+    else
+        .px-2.py-2.pt-4
+                p.text-center.lead.mb-2.mt-2 If it looks good, click a button.      
+        include 4Slide-buttons.pug

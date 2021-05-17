@@ -1,30 +1,32 @@
-extends base.pug
-block body
-  .text-center.pb-1.mb-4.shadow.pt-2
-    h1.display-4.fw-bold 
-      img.me-1.pb-3(src='clapper.png' width='62' height='62' alt='logo')
-      |  Intro Video Creator
-    .col-lg-12.mx-auto
-      if authorized
-        p.lead
-          | Click Jobs to view the current job queue and download past jobs.  Click templates to see available templates.
-        p Only 1 job will run at a time.  Jobs are processed on a LIFO basis.
-        p Only 1 job download is stored at a time.  
-        p.mb-4 Queueing a new job will immediately remove the old job.
-        .d-grid.gap-2.d-sm-flex.justify-content-sm-center.mb-5
-          a.btn.btn-primary.btn-lg.px-4.me-sm-3(role='button' href='/jobs') 
-            i.bi-clipboard-data.pe-2
-            |  Jobs
-          a.btn.btn-info.text-white.btn-lg.px-4.me-sm-3.dropdown-toggle(href='#' role='button' data-bs-toggle='dropdown')
-            i.bi-briefcase.pe-2
-            |  Templates
-          include dd-templates.pug
-      else
-        p.lead.mb-4
-          | Login to continue.
-        .d-grid.gap-2.d-sm-flex.justify-content-sm-center.mb-5
-          a.btn.btn-info.text-white.btn-lg.px-4.me-sm-3(role='button' href='/login') 
-            i.bi-box-arrow-in-right.pe-2
-            |  Login
-    .container
-      video.border.rounded-3.shadow-lg.mb-4(src='ivcreator.mp4' width='700' height='394' type='video/mp4' autoplay muted loop)
+extends mixins/layout.pug
+block main
+    .d-flex.flex-column.align-items-center.shadow.mb-2.px-2.rounded-3
+        div.px-1.pt-2
+            h1.display-4.fw-bold.text-center 
+                i.fas.fa-film.pe-1
+                |  Intro Video Creator
+        if auth
+            div.text-center.px-2 
+                p.h4.lead
+                    | Click Jobs to view the current job queue and download past jobs.  Click templates to see available templates.
+                p Only 1 job will run at a time.  Jobs are processed on a LIFO basis.
+                p Only 1 job download is stored at a time.  
+                p Queueing a new job will immediately remove the old job.
+            center.px-2
+                a.btn.btn-primary.btn-lg.me-2.mb-2(role='button' href='/jobs') 
+                    i.fas.fa-tasks.pe-1
+                    |  Jobs
+                a.btn.btn-info.text-white.btn-lg.dropdown-toggle.mb-2(href='#' role='button' data-bs-toggle='dropdown')
+                    i.fas.fa-briefcase.pe-1
+                    |  Templates
+                include mixins/dd-templates.pug
+        else
+            div.pb-2
+                p.h4.lead
+                    | Login to continue.
+            div    
+                a.btn.btn-lg.btn-info.text-white(role='button' href='/login') 
+                    i.fas.fa-sign-in-alt.pe-1
+                    |  Login
+        div.px-2
+            video.border.rounded-3.shadow-lg.img-fluid.mb-3.mt-2(src='ivcreator.mp4' type='video/mp4' autoplay muted loop playsinline)

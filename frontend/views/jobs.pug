@@ -1,25 +1,13 @@
-extends base.pug
-block body
-    include auth 
-    script.
-        $(()=>{getJobs('jobs');setInterval(getJobs, 10000, 'jobs');})        
-    h1.display-4.fw-bold.text-center 
-        i.bi-clipboard-data.pe-2
-        |  Jobs
-    .container.d-grid.justify-content-sm-center
-        .row
-            .col
-                #jobspin.spinner-grow.text-primary(style="width: 204px; height: 204px;" role='status')
-                #jobcard.card.d-none(style='width: 500px;').text-center
-                    h5.card-header.bg-danger.text-white
-                        #jobheader
-                    .card-body
-                        h5.card-title
-                            p#jobstatus
-                        p#jobid
-                        p.card-text
-                            .progress.pbar
-                                #progress.progress-bar.progress-bar-striped.progress-bar-animated(role='progressbar') 
-                                    #progval.me-1(style='text-align: right;')
-                        a#download.btn.btn-success.d-none(role='button') Download
-    br
+extends mixins/layout.pug
+block script 
+    script(src='jobs.js')
+block main
+    .d-flex.flex-column.align-items-center.shadow.mb-2.px-2.rounded-3
+        div.px-1.pt-2
+            h1.display-4.fw-bold 
+                i.fas.fa-tasks.pe-1
+                |  Jobs
+        #jobspinner.text-center
+                .spinner-grow.text-warning(style="width: 248px; height: 248px;" role='status' id=key + '_spin')
+        include mixins/jobs-card.pug
+        .pb-3.mb-3  
