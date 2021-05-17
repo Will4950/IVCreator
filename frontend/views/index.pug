@@ -9,9 +9,11 @@ block main
             div.text-center.px-2 
                 p.h4.lead
                     | Click Jobs to view the current job queue and download past jobs.  Click templates to see available templates.
-                p Only 1 job will run at a time.  Jobs are processed on a LIFO basis.
-                p Only 1 job download is stored at a time.  
-                p Queueing a new job will immediately remove the old job.
+                p 
+                    | See 
+                    a(href='help') help
+                    |  for an asset template and usage information.
+
             center.px-2
                 a.btn.btn-primary.btn-lg.me-2.mb-2(role='button' href='/jobs') 
                     i.fas.fa-tasks.pe-1

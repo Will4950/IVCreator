@@ -29,3 +29,12 @@
   max-width: 800px;
   width: 100%;
 }
+
+a{
+  text-decoration: none;
+  color: #0E71EB;
+}
+
+a:hover{
+  color: #F26D21;
+}
