@@ -14,7 +14,7 @@ socket.on('upload_image', (data) => {
 });
 
 const refreshStatus = () => {
-    $.ajax({url: '/api/status', type: 'get'})
+    $.ajax({url: '/api/4Slide', type: 'get'})
     .done((data) => {
         $('#status').html(data);
     });

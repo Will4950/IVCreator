@@ -37,4 +37,3 @@ socket.on('createJob', (data) => {
         window.location.href = '/jobs';
     }
 });
-

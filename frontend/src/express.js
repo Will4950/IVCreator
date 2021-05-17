@@ -67,8 +67,12 @@ app.get('/api/jobs', oidc.ensureAuthenticated(), (req, res) => {
   res.render('mixins/jobs-card.pug', {sub: req.sub, download: req.download, qjobs: req.qjobs, job: req.job})  
 });
 
-app.get('/api/status', oidc.ensureAuthenticated(), (req, res) => {
+app.get('/api/4Slide', oidc.ensureAuthenticated(), (req, res) => {
   res.render('mixins/4Slide-job.pug', {job: req.job, sub: req.sub})  
+});
+
+app.get('/api/Welcome', oidc.ensureAuthenticated(), (req, res) => {
+  res.render('mixins/Welcome-job.pug', {job: req.job, sub: req.sub})  
 });
 
 module.exports = app;
