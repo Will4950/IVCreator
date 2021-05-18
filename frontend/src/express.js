@@ -54,6 +54,10 @@ app.get('/Welcome', oidc.ensureAuthenticated(), (req, res) => {
   reqrender('Welcome', res, req);
 });
 
+app.get('/SS', oidc.ensureAuthenticated(), (req, res) => {
+  reqrender('SS', res, req);
+});
+
 app.get('/help', oidc.ensureAuthenticated(), (req, res) => {  
   reqrender('help', res, req);
 });
@@ -73,6 +77,10 @@ app.get('/api/4Slide', oidc.ensureAuthenticated(), (req, res) => {
 
 app.get('/api/Welcome', oidc.ensureAuthenticated(), (req, res) => {
   res.render('mixins/Welcome-job.pug', {job: req.job, sub: req.sub})  
+});
+
+app.get('/api/SS', oidc.ensureAuthenticated(), (req, res) => {
+  res.render('mixins/SS-job.pug', {job: req.job, sub: req.sub})  
 });
 
 module.exports = app;

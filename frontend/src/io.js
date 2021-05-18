@@ -31,6 +31,9 @@ io.on('connection', (socket) => {
         if (data.image === 'file_template_Welcome_1'){
             width = 620; height = 220;
         }
+        if (data.image === 'file_template_SS_4'){
+            width = 620; height = 220;
+        }
 
         var sharpTransform = sharp().resize({width: width, height: height, fit: 'inside'});
 
@@ -70,22 +73,36 @@ io.on('connection', (socket) => {
                     break;
                 case 'Welcome': template  = {"src": config.template_Welcome, "composition": "Render"}
                     break;
+                case 'SS': template  = {"src": config.template_SS, "composition": "Comp 1"}
+                    break;
             }
             assets = [];
-            if (data.template === 'Welcome'){
-                assets.push({"src": docs[0].file_template_Welcome_1, "type": "image","layerName": "SCRIPT IMAGE 1"});                
+            switch(data.template){
+                case 'Welcome':
+                    assets.push({"src": docs[0].file_template_Welcome_1, "type": "image","layerName": "SCRIPT IMAGE 1"});
+                    break;
+                case 'SS':
+                    assets.push({"src": docs[0].file_template_SS_1, "type": "image","layerName": "SCRIPT IMAGE 1"});
+                    assets.push({"src": docs[0].file_template_SS_2, "type": "image","layerName": "SCRIPT IMAGE 2"});
+                    assets.push({"src": docs[0].file_template_SS_3, "type": "image","layerName": "SCRIPT IMAGE 3"});
+                    assets.push({"src": docs[0].file_template_SS_4, "type": "image","layerName": "SCRIPT IMAGE 4"});
+                    assets.push({ "type": "data","layerName": "SCRIPT TEXT 1","property": "Source Text","value": he.decode(docs[0].text_template_SS_1)});
+                    assets.push({ "type": "data","layerName": "SCRIPT TEXT 2","property": "Source Text","value": he.decode(docs[0].text_template_SS_2)});
+                    assets.push({ "type": "data","layerName": "SCRIPT TEXT 3","property": "Source Text","value": he.decode(docs[0].text_template_SS_3)});
+                    assets.push({ "type": "data","layerName": "SCRIPT TEXT 4","property": "Source Text","value": he.decode(docs[0].text_template_SS_4)});
+                    break;
+                case '4Slide':
+                    assets.push({"src": docs[0].file_template_4Slide_4, "type": "image","layerName": "SCRIPT LOGO"});
+                    assets.push({"src": docs[0].file_template_4Slide_1, "type": "image","layerName": "SCRIPT SLIDE1"});
+                    assets.push({"src": docs[0].file_template_4Slide_2, "type": "image","layerName": "SCRIPT SLIDE2"});
+                    assets.push({"src": docs[0].file_template_4Slide_3, "type": "image","layerName": "SCRIPT SLIDE3"});
+                    assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 1","property": "Source Text","value": he.decode(docs[0].text_template_4Slide_1)});
+                    assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 2","property": "Source Text","value": he.decode(docs[0].text_template_4Slide_2)});
+                    assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 3","property": "Source Text","value": he.decode(docs[0].text_template_4Slide_3)});
+                    assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 4","property": "Source Text","value": he.decode(docs[0].text_template_4Slide_4)});
+                    break;
             }
-            else {
-                assets.push({"src": docs[0].file_template_4Slide_4, "type": "image", "layerName": "SCRIPT LOGO"});
-                assets.push({"src": docs[0].file_template_4Slide_1, "type": "image","layerName": "SCRIPT SLIDE1"});
-                assets.push({"src": docs[0].file_template_4Slide_2, "type": "image","layerName": "SCRIPT SLIDE2"});
-                assets.push({"src": docs[0].file_template_4Slide_3, "type": "image","layerName": "SCRIPT SLIDE3"});
-                assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 1","property": "Source Text","value": he.decode(docs[0].text_template_4Slide_1)});
-                assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 2","property": "Source Text","value": he.decode(docs[0].text_template_4Slide_2)});
-                assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 3","property": "Source Text","value": he.decode(docs[0].text_template_4Slide_3)});
-                assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 4","property": "Source Text","value": he.decode(docs[0].text_template_4Slide_4)});
-            }
-
+            
             postrender=[];
             postrender.push({"module": "@nexrender/action-encode", "preset": "mp4","output": "encoded.mp4"});
             postrender.push({"module": "@nexrender/action-copy", "input": "encoded.mp4", "output": config.output + docs[0].sub + ".mp4"});

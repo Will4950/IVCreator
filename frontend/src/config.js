@@ -21,5 +21,6 @@ config.okta.redirect_uri = config.okta.appBaseUrl + '/authorization-code/callbac
 config.template_4Slide = process.env.TEMPLATE_4Slide; 
 config.template_4Slide_alt = process.env.TEMPLATE_4Slide_alt; 
 config.template_Welcome = process.env.TEMPLATE_WELCOME; 
+config.template_SS = process.env.TEMPLATE_SS;
 
 module.exports = config;
