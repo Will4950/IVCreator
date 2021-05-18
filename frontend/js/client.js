@@ -30,10 +30,7 @@ const createJob = (button) => {
         sub: button.getAttribute('sub'),
         template: button.getAttribute('template')
     });
+    $('#status').html('');
+    window.location.href = '/jobs'
 }
 
-socket.on('createJob', (data) => {
-    if (data.status === 'ok'){
-        window.location.href = '/jobs';
-    }
-});

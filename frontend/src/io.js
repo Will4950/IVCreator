@@ -144,18 +144,12 @@ const postJob = (sub, job) => {
                 var a = JSON.parse(str)
                 db.update({sub: sub}, {$set: {job: a}}, {}, (err, numrep) => {
                     getJobs();
-                    io.to(sid).emit('createJob', {
-                        status: 'ok'
-                    });
                 });                 
             } 
             catch(e) { 
                 logger.error('postJob res: ' + e);
                 db.update({sub: sub}, {$set: {job: false}}, {}, (err, numrep) => {
                     getJobs();
-                    io.to(sid).emit('createJob', {
-                        status: 'error'
-                    });
                 });
             }
             
