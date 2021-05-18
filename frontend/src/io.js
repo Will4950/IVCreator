@@ -91,6 +91,9 @@ io.on('connection', (socket) => {
                     assets.push({ "type": "data","layerName": "SCRIPT TEXT 3","property": "Source Text","value": he.decode(docs[0].text_template_SS_3)});
                     assets.push({ "type": "data","layerName": "SCRIPT TEXT 4","property": "Source Text","value": he.decode(docs[0].text_template_SS_4)});
                     break;
+                case '4Slide-short':
+                case '4Slide-alt':
+                case '4Slide-alt-short':
                 case '4Slide':
                     assets.push({"src": docs[0].file_template_4Slide_4, "type": "image","layerName": "SCRIPT LOGO"});
                     assets.push({"src": docs[0].file_template_4Slide_1, "type": "image","layerName": "SCRIPT SLIDE1"});
