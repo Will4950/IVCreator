@@ -1,6 +1,4 @@
 const logger = require('src/logger');
-const config = require('src/config');
-const http = require('http');
 const Datastore = require('nedb');
 const db = new Datastore({ filename: 'db/frontend.db', autoload: true });
 const jobdb = new Datastore({ filename: 'db/job.db', autoload: true });
@@ -75,43 +73,4 @@ const dbmw = (req, res, next) => {
     }
 }
 
-const getJobs = () =>{
-    const options = {
-        method: 'GET',
-        hostname: config.nexrender.host,
-        port: config.nexrender.port,
-        path: '/api/v1/jobs',
-        headers: {
-            'nexrender-secret': config.nexrender.secret,
-            'Content-Type': 'application/json'
-        }
-    };
-
-    var hcb = function(response) {
-        var str = '';
-
-        response.on('data', function (chunk) {
-          str += chunk;
-        });
-
-        response.on('end', function () {            
-            try { 
-                var a = JSON.parse(str);
-                jobdb.update({sub: 'jobs'}, {$set: {a: a}}, {});
-            } 
-            catch(e) {logger.error('getJobs: ' + e);}
-            
-        });
-    }
-
-    var req = http.request(options, hcb)
-    req.on('error', (e) => {
-        logger.error('getJobs: ' + e)
-    });
-
-    req.end();
-
-}
-
-setInterval(getJobs, 10000);
-module.exports = {db, dbmw, getJobs};
+module.exports = {db, jobdb, dbmw};

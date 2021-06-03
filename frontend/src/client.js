@@ -1,6 +1,6 @@
 const logger = require('src/logger');
 const config = require('src/config');
-const {db, getJobs} = require('src/db');
+const {db, jobdb} = require('src/db');
 const { Readable } = require('stream');
 const sharp = require('sharp');
 const he = require('he');
@@ -101,11 +101,12 @@ const createJob = (req, res) => {
         jobjson.assets = assets;
         jobjson.actions = {};
         jobjson.actions.postrender = postrender;
-        postJob(req.body.sub, jobjson, res);
+        postJob(req.body.sub, jobjson);
+        res.end();
     });
 }
 
-const postJob = (sub, job, res) => {
+const postJob = (sub, job) => {
     const options = {
         method: 'POST',
         hostname: config.nexrender.host,
@@ -117,26 +118,24 @@ const postJob = (sub, job, res) => {
         }
     };
 
-    var hcb = function(response) {
+    var hcb = (response) => {
         var str = '';
 
-        response.on('data', function (chunk) {
+        response.on('data', (chunk) => {
           str += chunk;
         });
 
-        response.on('end', function () { 
+        response.on('end', () => { 
             try {
                 var a = JSON.parse(str)
                 db.update({sub: sub}, {$set: {job: a}}, {}, (err, numrep) => {
                     getJobs();
-                    res.end();
                 });                 
             } 
             catch(e) { 
                 logger.error('postJob res: ' + e);
                 db.update({sub: sub}, {$set: {job: false}}, {}, (err, numrep) => {
                     getJobs();
-                    res.end();
                 });
             }
             
@@ -152,5 +151,43 @@ const postJob = (sub, job, res) => {
     req.write(a);    
     req.end();
 };
+
+const getJobs = () =>{
+    const options = {
+        method: 'GET',
+        hostname: config.nexrender.host,
+        port: config.nexrender.port,
+        path: '/api/v1/jobs',
+        headers: {
+            'nexrender-secret': config.nexrender.secret,
+            'Content-Type': 'application/json'
+        }
+    };
+
+    var hcb = (response) => {
+        var str = '';
+
+        response.on('data', (chunk) => {
+          str += chunk;
+        });
+
+        response.on('end', () => {            
+            try { 
+                var a = JSON.parse(str);
+                jobdb.update({sub: 'jobs'}, {$set: {a: a}}, {});
+            } 
+            catch(e) {logger.error('getJobs: ' + e);}
+            
+        });
+    }
+
+    var req = http.request(options, hcb)
+    req.on('error', (e) => {
+        logger.error('getJobs: ' + e)
+    });
+    req.end();
+}
+
+setInterval(getJobs, 10000);
 
 module.exports =  {uploadText, uploadImage, createJob}
