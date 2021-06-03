@@ -3,7 +3,8 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const expressWinston = require('express-winston');
-const multer = require('multer')
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage()});
 const config = require('src/config');
 const logger = require('src/logger');
 const {oidc, authmw} = require('src/auth');
@@ -26,8 +27,7 @@ const app = express();
 app.set('port', config.port);
 app.set('view engine', 'pug');
 app.set('views', 'views');
-app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.json({limit:'100MB'}));
 app.use(express.static('public/assets'));
 app.use(express.static('public/js'));
 app.use(express.static('public/stylesheets'));
@@ -81,9 +81,9 @@ app.get('/status', oidc.ensureAuthenticated(), (req, res) => {
   catch(e){logger.error(e);}  
 });
 
-app.post('/upload-text', oidc.ensureAuthenticated(), multer().none(), uploadText);
-app.post('/upload-image', oidc.ensureAuthenticated(), multer().single('file'), uploadImage);
-app.post('/create-job', oidc.ensureAuthenticated(), multer().none(), createJob);
+app.post('/upload-text', oidc.ensureAuthenticated(), upload.none(), uploadText);
+app.post('/upload-image', oidc.ensureAuthenticated(), upload.single('file'), uploadImage);
+app.post('/create-job', oidc.ensureAuthenticated(), upload.none(), createJob);
 
 app.use(function(req, res) {
   res.status(404).render('404');

@@ -1,7 +1,6 @@
 const logger = require('src/logger');
 const config = require('src/config');
 const {db, jobdb} = require('src/db');
-const { Readable } = require('stream');
 const sharp = require('sharp');
 const he = require('he');
 const http = require('http');
@@ -18,28 +17,23 @@ const uploadText = (req, res) => {
 
 const uploadImage = (req, res) => {
     try{
-        logger.debug('upload_image: ' + req.body.sub + ' | ' + req.body.image);
+        logger.debug('upload_image: ' + req.body.sub + ' | ' + req.body.image);        
         
         var width=1920, height=1080;
         if (req.body.image === 'file_template_4Slide_4'){width = 620; height = 220;}
         if (req.body.image === 'file_template_Welcome_1'){width = 620; height = 220;}
         if (req.body.image === 'file_template_SS_4'){width = 620; height = 220;}
-        var sharpTransform = sharp().resize({width: width, height: height, fit: 'inside'}).png({force: true});
 
-        var readable = Readable.from(req.file.buffer);
-        readable.pipe(sharpTransform).toBuffer((err, buffer, info) => {
+        sharp(req.file.buffer)
+        .resize({width: width, height: height, fit: 'inside'})
+        .toFormat('png')
+        .toBuffer((err, buffer, info) => {
             try{var img = 'data:image/png;base64,' + buffer.toString('base64');}
             catch(e){logger.error('upload_image: ' + e);}
             db.update({sub: req.body.sub}, {$set: {[req.body.image]: img}}, {}, (err, numrep) => {
                 res.send({image: req.body.image, src: img}).end();
             });
         });
-        readable.on('error', (e)=>{
-            logger.error('stream: ' + e);
-        })
-        sharpTransform.on('error', (e)=>{
-            logger.error('sharp: ' + e);
-        }) 
     } 
     catch(e){logger.error(e);}  
 }
