@@ -1,0 +1,12 @@
+div.tempcard
+    .card.iv-card.shadow
+        label.card-header.bg-primary.text-white.form-label(for=dvtext)
+            if val == 1
+                | Speaker 1 Name
+            if val == 3
+                | Speaker 2 Name
+        .card-body
+            - var key = 'text_template_SS_' + val
+            input.form-control.my-1(onchange='upload_text(this);' value=docs[key] id=key sub=sub)
+            .text-center
+                .spinner-grow.text-primary.d-none(style="width: 42px; height: 42px;" role='status' id=key + '_spin')

@@ -1,0 +1,22 @@
+{
+  "name": "ivcreator-worker",
+  "version": "1.0.0",
+  "description": "Intro Video Creator",
+  "main": "worker.js",
+  "scripts": {
+    "start": "node worker.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Will4950/IVCreator.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Will4950/IVCreator/issues"
+  },
+  "homepage": "https://github.com/Will4950/IVCreator#readme",
+  "dependencies": {
+    "dotenv": "^9.0.2"
+  }
+}

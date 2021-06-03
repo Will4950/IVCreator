@@ -3,11 +3,15 @@ const config = require('src/config');
 const http = require('http');
 const Datastore = require('nedb');
 const db = new Datastore({ filename: 'db/frontend.db', autoload: true });
+const jobdb = new Datastore({ filename: 'db/job.db', autoload: true });
 const fs = require('fs');
 
 const sizeCheck = () =>{
     if (fs.statSync('db/frontend.db').size > 524288000) {
         db.persistence.compactDatafile();
+    }
+    if (fs.statSync('db/job.db').size > 524288000) {
+        jobdb.persistence.compactDatafile();
     }
 }
 setInterval(sizeCheck, 60000);
@@ -16,9 +20,9 @@ db.on('compaction.done', () =>{
     logger.silly('db: compaction.done');
 });
 
-db.find({sub: 'jobs'}, (err, docs) => {
+jobdb.find({sub: 'jobs'}, (err, docs) => {
     if (docs.length == 0){
-        db.insert({sub: 'jobs'});
+       jobdb.insert({sub: 'jobs'});
     }
 })
 
@@ -51,7 +55,7 @@ const dbmw = (req, res, next) => {
                     job = dbdocs[0].job;
             }
 
-            db.find({sub: 'jobs'}, (err, dbdocs) =>{
+            jobdb.find({sub: 'jobs'}, (err, dbdocs) =>{
                 if(typeof dbdocs[0].a != 'undefined'){
                     qjobs = dbdocs[0].a.reduce((n, x) => n + (x.state === 'queued'), 0);
                     if (job) {                      
@@ -93,7 +97,7 @@ const getJobs = () =>{
         response.on('end', function () {            
             try { 
                 var a = JSON.parse(str);
-                db.update({sub: 'jobs'}, {$set: {a: a}}, {});
+                jobdb.update({sub: 'jobs'}, {$set: {a: a}}, {});
             } 
             catch(e) {logger.error('getJobs: ' + e);}
             

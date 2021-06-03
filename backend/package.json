@@ -1,6 +1,6 @@
 {
   "name": "ivcreator-backend",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Intro Video Creator",
   "main": "backend.js",
   "scripts": {

@@ -1,0 +1,14 @@
+div.tempcard
+    .card.iv-card.shadow
+        .card-header.bg-primary.text-white
+            | Custom Logo 620x220
+        .card-body
+            - var key = 'file_template_Welcome_' + val
+            img.rounded-3.pimg(src=docs[key] id=key)
+            .text-center
+                .spinner-grow.text-primary.d-none(style="width: 169px; height: 169px;" role='status' id=key + '_spin')
+        .card-footer
+            .d-grid.shadow
+                label.btn.btn-info.text-white(for=key + 'i') Change Image
+                input.form-contol(onchange='upload_image(this);' type='file' accept='image/*' style='visibility: hidden; display: none;' id=key + 'i' iid=key sub=sub)
+                

@@ -1,0 +1,21 @@
+div.tempcard
+    .card.iv-card.shadow
+        .card-header.bg-primary.text-white
+            if val == 1
+                | Slide #{val} : Welcome
+            if val == 2
+                | Slide #{val} : Meet the team
+            if val == 3
+                | Slide #{val} : Meet the team
+            if val == 4
+                | Slide #{val} : Logo 620x220
+        .card-body
+            - var key = 'file_template_4Slide_' + val
+            img.rounded-3.pimg(src=docs[key] id=key)
+            .text-center
+                .spinner-grow.text-primary.d-none(style="width: 169px; height: 165px;" role='status' id=key + '_spin')
+        .card-footer
+            .d-grid.shadow
+                label.form-contol.btn.btn-info.text-white(for=key + 'i') Change Image
+                input.form-contol(onchange='upload_image(this);' type='file' accept='image/*' style='visibility: hidden; display: none;' id=key + 'i' iid=key sub=sub)
+            

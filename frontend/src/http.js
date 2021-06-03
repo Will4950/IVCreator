@@ -2,8 +2,6 @@ const http = require('http');
 const app = require('src/express');
 const logger = require('src/logger');
 const server = http.createServer(app);
-const socketapi = require('src/io');
-socketapi.io.attach(server);
 server.on('error', onError);
 server.on('listening', onListening);
 
