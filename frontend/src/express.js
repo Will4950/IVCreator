@@ -26,7 +26,7 @@ const app = express();
 app.set('port', config.port);
 app.set('view engine', 'pug');
 app.set('views', 'views');
-app.use(express.json({limit:'50mb'}));
+app.use(express.json({limit:'50MB'}));
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('public/assets'));
 app.use(express.static('public/js'));
