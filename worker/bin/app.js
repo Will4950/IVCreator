@@ -5,7 +5,7 @@ var worker = spawn('nexrender-worker-win64.exe', [
     '--no-license', 
     '--secret=' + config.nexrender.secret, 
     '--multi-frames',
-    '--workpath=' + config.nexreder.workpath
+    '--workpath=' + config.nexrender.workpath
     ]
 );
 worker.stdout.on('data', data=>console.log(data.toString()));
