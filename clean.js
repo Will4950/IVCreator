@@ -23,4 +23,4 @@ rmDir = function(dirPath) {
 rmDir('frontend/public/download');
 
 var exec = require('child_process').execFile;
-var server = exec('backend/nexrender-server-win64.exe', ['--cleanup']);
+exec('backend/nexrender-server-win64.exe', ['--cleanup']);
