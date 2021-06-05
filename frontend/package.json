@@ -1,6 +1,6 @@
 {
   "name": "ivcreator-frontened",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Intro Video Creator",
   "main": "frontend.js",
   "scripts": {

@@ -93,4 +93,12 @@ const update_jobdb = (val1, val2, val3, val4) => {
     });
 }
 
-module.exports = {dbmw, update_db, update_jobdb, db, jobdb};
+const db_find = (val1) => {
+    return new Promise(resolve => {
+        db.find({sub: val1}, (err, docs) => {
+            resolve(docs);
+        });
+    });
+}
+
+module.exports = {dbmw, update_db, update_jobdb, db_find};

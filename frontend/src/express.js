@@ -6,6 +6,7 @@ const {oidc, authmw} = require('src/auth');
 const {dbmw} = require('src/db');
 const fsmw = require('src/fs');
 const sessionmw = require('src/session');
+const routes = require('src/routes');
 const app = express();
 
 app.set('port', config.port);
@@ -29,5 +30,6 @@ app.use(oidc.router);
 app.use(authmw);
 app.use(dbmw);
 app.use(fsmw);
+app.use(routes);
 
 module.exports = app;

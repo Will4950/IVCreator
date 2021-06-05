@@ -22,5 +22,6 @@ rmDir = function(dirPath) {
 
 rmDir('frontend/public/download');
 
-var exec = require('child_process').execFile;
-exec('backend/nexrender-server-win64.exe', ['--cleanup']);
+const { spawn } = require('child_process');
+var server = spawn('backend/nexrender-server-win64.exe', ['--cleanup']);
+server.stdout.on('data', data=>console.log(data.toString()));

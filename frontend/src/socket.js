@@ -2,7 +2,7 @@ const io = require('socket.io')();
 const logger = require('src/logger');
 const config = require('src/config');
 const ss = require('@sap_oss/node-socketio-stream');
-const {update_jobdb, update_db, db} = require('src/db');
+const {update_jobdb, update_db, db_find} = require('src/db');
 const { Readable } = require('stream');
 const sharp = require('sharp');
 const he = require('he');
@@ -41,19 +41,11 @@ io.on('connection', (socket) => {
                 });
             });
         })
-    
-        readable.on('error', (e)=>{
-            console.error('stream: ' + e);
-        })
-    
-        sharpTransform.on('error', (e)=>{
-            console.error('sharp: ' + e);
-        })
     });
 
     socket.on('create_job', (data) =>{
         logger.debug('createJob: ' + data.sub + ' ' + data.template);        
-        db.find({sub: data.sub}, (err, docs) => {
+        db_find(data.sub).then((docs) => {
             var jobjson,template, assets, postrender;            
             switch (data.template){
                 case '4Slide': template  = {"src": config.template_4Slide, "composition": "Opener Final Comp w/ Music"}
