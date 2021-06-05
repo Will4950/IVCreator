@@ -1,6 +1,6 @@
 {
   "name": "ivcreator-worker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Intro Video Creator",
   "main": "worker.js",
   "scripts": {
