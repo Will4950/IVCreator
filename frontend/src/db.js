@@ -18,6 +18,10 @@ db.on('compaction.done', () =>{
     logger.silly('db: compaction.done');
 });
 
+jobdb.on('compaction.done', () =>{
+    logger.silly('jobdb: compaction.done');
+});
+
 jobdb.find({sub: 'jobs'}, (err, docs) => {
     if (docs.length == 0){
        jobdb.insert({sub: 'jobs'});
@@ -73,4 +77,20 @@ const dbmw = (req, res, next) => {
     }
 }
 
-module.exports = {db, jobdb, dbmw};
+const update_db = (val1, val2, val3, val4) => {
+    return new Promise(resolve => {
+        db.update({[val1]: val2}, {$set: {[val3]: val4}}, {}, (err, numrep) => {
+            resolve();
+        });
+    });
+}
+
+const update_jobdb = (val1, val2, val3, val4) => {
+    return new Promise(resolve => {
+        jobdb.update({[val1]: val2}, {$set: {[val3]: val4}}, {}, (err, numrep) => {
+            resolve();
+        });
+    });
+}
+
+module.exports = {dbmw, update_db, update_jobdb, db, jobdb};

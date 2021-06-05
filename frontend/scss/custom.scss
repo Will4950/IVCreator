@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Lato:200,300,400,700);
+@import "../node_modules/@fontsource/lato/scss/mixins";
 $font-family-base:Lato;
 $headings-font-family:Lato;
 
@@ -17,7 +17,7 @@ $enable-grid-classes:true;
 $enable-gradients:true;
 $enable-rounded:true;
 
-$fa-font-path: "webfonts";
+$fa-font-path: "fontawesome";
 @import "../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
 @import "../node_modules/@fortawesome/fontawesome-free/scss/solid";
 @import "../node_modules/@fortawesome/fontawesome-free/scss/brands";

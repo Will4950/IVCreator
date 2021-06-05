@@ -1,9 +1,14 @@
 const http = require('http');
 const app = require('src/express');
+require('src/routes');
 const logger = require('src/logger');
 const server = http.createServer(app);
+const socketapi = require('src/socket');
+socketapi.io.attach(server);
+
 server.on('error', onError);
 server.on('listening', onListening);
+
 
 function onError(error) {
 	if (error.syscall !== 'listen') {
