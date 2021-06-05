@@ -7,5 +7,6 @@ block main
                 |  Jobs
         #jobspinner.text-center
                 .spinner-grow.text-warning(style="width: 248px; height: 248px;" role='status' id=key + '_spin')
-        include mixins/jobs-card.pug
+        #job-card.jobcard
+            include mixins/jobs-card.pug
         .pb-3.mb-3  
