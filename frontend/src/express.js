@@ -2,10 +2,10 @@ const express = require('express');
 const expressWinston = require('express-winston');
 const config = require('src/config');
 const logger = require('src/logger');
-const {oidc, authmw} = require('src/auth');
-const {dbmw} = require('src/db');
-const fsmw = require('src/fs');
-const sessionmw = require('src/session');
+const {oidc, authmw} = require('src/middleware/auth');
+const dbmw = require('src/middleware/dbmw');
+const fsmw = require('src/middleware/fs');
+const sessionmw = require('src/middleware/session');
 const routes = require('src/routes');
 const app = express();
 

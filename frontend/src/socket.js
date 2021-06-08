@@ -2,11 +2,11 @@ const io = require('socket.io')();
 const logger = require('src/logger');
 const config = require('src/config');
 const ss = require('@sap_oss/node-socketio-stream');
-const {db} = require('src/db');
+const db = require('src/redis');
 const { Readable } = require('stream');
 const sharp = require('sharp');
 const he = require('he');
-const http = require('http');
+const {postJob} = require('src/http');
 
 const socketapi = {io: io};
 
@@ -106,47 +106,3 @@ io.on('connection', (socket) => {
 });
 
 module.exports = socketapi;
-
-const postJob = (sub, job) => {
-    return new Promise(resolve => {
-        const options = {
-            method: 'POST',
-            hostname: config.nexrender.host,
-            port: config.nexrender.port,
-            path: '/api/v1/jobs',
-            headers: {
-                'nexrender-secret': config.nexrender.secret,
-                'Content-Type': 'application/json'
-            }
-        };
-
-        var hcb = (response) => {
-            var str = '';
-
-            response.on('data', (chunk) => {
-            str += chunk;
-            });
-
-            response.on('end', () => { 
-                try {
-                    var a = JSON.parse(str);
-                    if (typeof a.uid !== 'null' && typeof a.uid !== 'undefined') {
-                        db.hset(sub, 'job_uid', a.uid, (err, value) => resolve());
-                    }
-                } 
-                catch(e) { 
-                    logger.error('postJob res: ' + e);
-                }                
-            });
-        }
-
-        try {var a = JSON.stringify(job);} 
-        catch(e) {logger.error('postJob: ' + e);}
-        var req = http.request(options, hcb);
-        req.on('error', (e) => {
-            logger.error('postJob: ' + e)
-        });    
-        req.write(a);    
-        req.end();
-    });
-}

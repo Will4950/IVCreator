@@ -5,7 +5,7 @@ const logger = require('src/logger');
 const server = http.createServer(app);
 const socketapi = require('src/socket');
 socketapi.io.attach(server);
-const {oidc} = require('src/auth');
+const {oidc} = require('src/middleware/auth');
 
 const onError = (error) => {
 	if (error.syscall !== 'listen') {

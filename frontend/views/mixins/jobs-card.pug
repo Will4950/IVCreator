@@ -1,5 +1,5 @@
 #jobcard.flex-column.shadow.rounded-3.text-center.d-none            
-    h3#jobheader.bg-danger.text-white.rounded.shadow.mb-2.py-1 #{qjobs} jobs in queue
+    h3#jobheader.bg-danger.text-white.rounded.shadow.mb-2.py-1 #{docs.qjobs} jobs in queue
     div.mt-4
         h4#jobstatus
             if docs.job_uid   
@@ -30,5 +30,5 @@
                     #progress.progress-bar.progress-bar-striped.progress-bar-animated.bg-warning.w-100(role='progressbar')
                         #progval.me-1(style='text-align: right;') no job
     div.pb-3.my-2
-        if download 
+        if docs.download 
             a#download.btn.btn-success(role='button' href='download/' + sub + '.mp4') Download

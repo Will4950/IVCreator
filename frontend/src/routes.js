@@ -2,11 +2,11 @@ const fs = require("fs");
 const path = require('path');
 const express = require('express');
 const router = express.Router();
-const {oidc} = require('src/auth');
+const {oidc} = require('src/middleware/auth');
 const logger = require('src/logger');
 
 const reqrender = (template, req, res) => {
-    res.render(template, {auth: req.auth, sub: req.sub, download: req.download, docs: req.docs, qjobs: req.qjobs});
+    res.render(template, {auth: req.auth, sub: req.sub, docs: req.docs});
 }
 
 router.get('/', (req, res) => {

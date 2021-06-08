@@ -6,7 +6,10 @@ block main
                 i.fas.fa-tasks.pe-1
                 |  Jobs
         #jobspinner.text-center
-                .spinner-grow.text-warning(style="width: 248px; height: 248px;" role='status' id=key + '_spin')
+            if docs.download
+                .spinner-grow.text-warning(style="width: 253px; height: 253px;" role='status' id=key + '_spin') 
+            else
+                .spinner-grow.text-warning(style="width: 215px; height: 215px;" role='status' id=key + '_spin')
         #job-card.jobcard
             include mixins/jobs-card.pug
         .pb-3.mb-3  
