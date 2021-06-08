@@ -1,11 +1,19 @@
 const config = require('src/config');
-const { spawn } = require('child_process');
-var worker = spawn('nexrender-worker-win64.exe', [
-    '--host=' + config.nexrender.host + ':' + config.nexrender.port, 
-    '--no-license', 
-    '--secret=' + config.nexrender.secret, 
-    '--multi-frames',
-    '--workpath=' + config.nexrender.workpath
-    ]
-);
-worker.stdout.on('data', data=>console.log(data.toString()));
+const logger = require('src/logger');
+const { start } = require('@nexrender/worker');
+
+const main = async () => {
+    const serverHost = config.nexrender.host + ':' + config.nexrender.port;
+
+    await start(serverHost, config.nexrender.secret, {
+        workpath: config.nexrender.workpath,
+        multiFrames: true,
+        addLicense: (config.nexrender.license === 'true')
+    })
+}
+
+console.log = data => logger.debug(data);
+console.warn = data => logger.warn(data);
+console.error = data => logger.error(data);
+
+main().catch(logger.error);

@@ -2,7 +2,7 @@ const io = require('socket.io')();
 const logger = require('src/logger');
 const config = require('src/config');
 const ss = require('@sap_oss/node-socketio-stream');
-const {update_jobdb, update_db, db_find} = require('src/db');
+const {db} = require('src/db');
 const { Readable } = require('stream');
 const sharp = require('sharp');
 const he = require('he');
@@ -16,36 +16,34 @@ io.on('connection', (socket) => {
 
     socket.on('upload_text', (data) =>{
         logger.debug('upload_text: ' + data.text + ' | ' +  data.sub);
-        update_db('sub', data.sub, data.text, data.value).then(() => {
-            io.to(sid).emit('upload_text', {text: data.text});
-        })
+        db.hset(data.sub, data.text, data.value, (err, value) => {
+            io.to(sid).emit('upload_text', {text: data.text})
+        });
     })
 
     ss(socket).on('upload_image', (stream, data) => {
         logger.debug('upload_image: ' + data.image + ' | ' + data.sub);
         
-        var width=1920, height=1080;
-        if (data.image === 'file_template_4Slide_4'){ width = 620; height = 220;}
-        if (data.image === 'file_template_Welcome_1'){width = 620; height = 220;}
-        if (data.image === 'file_template_SS_4'){width = 620; height = 220;}    
-        var sharpTransform = sharp().resize({width: width, height: height, fit: 'inside'}).toFormat('png');
-    
-        var readable = Readable.from(stream);
-        readable.pipe(sharpTransform).toBuffer((err, buffer, info) => {
-            try{var img = 'data:image/png;base64,' + buffer.toString('base64');}
-            catch(e){logger.error('upload_image: ' + e);}
-            update_db('sub', data.sub, data.image, img).then(()=>{
-                io.to(sid).emit('upload_image', {
-                    image: data.image,
-                    src: img
+        db.hgetall(data.sub, (err, value) => {
+            var sharpTransform = sharp().resize({width: parseInt(value[data.image + '_resw']), height: parseInt(value[data.image + '_resh']), fit: 'inside'}).png({palette: true, force: true});
+        
+            var readable = Readable.from(stream);
+            readable.pipe(sharpTransform).toBuffer((err, buffer, info) => {
+                try{var img = 'data:image/png;base64,' + buffer.toString('base64');}
+                catch(e){logger.error('upload_image: ' + e);}
+                db.hset(data.sub, data.image, img, (err, value) => {
+                    io.to(sid).emit('upload_image', {
+                        image: data.image,
+                        src: img
+                    });
                 });
-            });
-        })
+            })
+        })        
     });
 
     socket.on('create_job', (data) =>{
         logger.debug('createJob: ' + data.sub + ' ' + data.template);        
-        db_find(data.sub).then((docs) => {
+        db.hgetall(data.sub, (err, docs) => {
             var jobjson,template, assets, postrender;            
             switch (data.template){
                 case '4Slide': template  = {"src": config.template_4Slide, "composition": "Opener Final Comp w/ Music"}
@@ -64,46 +62,50 @@ io.on('connection', (socket) => {
             assets = [];
             switch(data.template){
                 case 'Welcome':
-                    assets.push({"src": docs[0].file_template_Welcome_1, "type": "image","layerName": "SCRIPT IMAGE 1"});
+                    assets.push({"src": docs.file_template_Welcome_1, "type": "image","layerName": "SCRIPT IMAGE 1"});
                     break;
                 case 'SS':
-                    assets.push({"src": docs[0].file_template_SS_1, "type": "image","layerName": "SCRIPT IMAGE 1"});
-                    assets.push({"src": docs[0].file_template_SS_2, "type": "image","layerName": "SCRIPT IMAGE 2"});
-                    assets.push({"src": docs[0].file_template_SS_3, "type": "image","layerName": "SCRIPT IMAGE 3"});
-                    assets.push({"src": docs[0].file_template_SS_4, "type": "image","layerName": "SCRIPT IMAGE 4"});
-                    assets.push({ "type": "data","layerName": "SCRIPT TEXT 1","property": "Source Text","value": he.decode(docs[0].text_template_SS_1)});
-                    assets.push({ "type": "data","layerName": "SCRIPT TEXT 2","property": "Source Text","value": he.decode(docs[0].text_template_SS_2)});
-                    assets.push({ "type": "data","layerName": "SCRIPT TEXT 3","property": "Source Text","value": he.decode(docs[0].text_template_SS_3)});
-                    assets.push({ "type": "data","layerName": "SCRIPT TEXT 4","property": "Source Text","value": he.decode(docs[0].text_template_SS_4)});
+                    assets.push({"src": docs.file_template_SS_1, "type": "image","layerName": "SCRIPT IMAGE 1"});
+                    assets.push({"src": docs.file_template_SS_2, "type": "image","layerName": "SCRIPT IMAGE 2"});
+                    assets.push({"src": docs.file_template_SS_3, "type": "image","layerName": "SCRIPT IMAGE 3"});
+                    assets.push({"src": docs.file_template_SS_4, "type": "image","layerName": "SCRIPT IMAGE 4"});
+                    assets.push({ "type": "data","layerName": "SCRIPT TEXT 1","property": "Source Text","value": he.decode(docs.text_template_SS_1)});
+                    assets.push({ "type": "data","layerName": "SCRIPT TEXT 2","property": "Source Text","value": he.decode(docs.text_template_SS_2)});
+                    assets.push({ "type": "data","layerName": "SCRIPT TEXT 3","property": "Source Text","value": he.decode(docs.text_template_SS_3)});
+                    assets.push({ "type": "data","layerName": "SCRIPT TEXT 4","property": "Source Text","value": he.decode(docs.text_template_SS_4)});
                     break;
                 case '4Slide-short':
                 case '4Slide-alt':
                 case '4Slide-alt-short':
                 case '4Slide':
-                    assets.push({"src": docs[0].file_template_4Slide_4, "type": "image","layerName": "SCRIPT LOGO"});
-                    assets.push({"src": docs[0].file_template_4Slide_1, "type": "image","layerName": "SCRIPT SLIDE1"});
-                    assets.push({"src": docs[0].file_template_4Slide_2, "type": "image","layerName": "SCRIPT SLIDE2"});
-                    assets.push({"src": docs[0].file_template_4Slide_3, "type": "image","layerName": "SCRIPT SLIDE3"});
-                    assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 1","property": "Source Text","value": he.decode(docs[0].text_template_4Slide_1)});
-                    assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 2","property": "Source Text","value": he.decode(docs[0].text_template_4Slide_2)});
-                    assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 3","property": "Source Text","value": he.decode(docs[0].text_template_4Slide_3)});
-                    assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 4","property": "Source Text","value": he.decode(docs[0].text_template_4Slide_4)});
+                    assets.push({"src": docs.file_template_4Slide_4, "type": "image","layerName": "SCRIPT LOGO"});
+                    assets.push({"src": docs.file_template_4Slide_1, "type": "image","layerName": "SCRIPT SLIDE1"});
+                    assets.push({"src": docs.file_template_4Slide_2, "type": "image","layerName": "SCRIPT SLIDE2"});
+                    assets.push({"src": docs.file_template_4Slide_3, "type": "image","layerName": "SCRIPT SLIDE3"});
+                    assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 1","property": "Source Text","value": he.decode(docs.text_template_4Slide_1)});
+                    assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 2","property": "Source Text","value": he.decode(docs.text_template_4Slide_2)});
+                    assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 3","property": "Source Text","value": he.decode(docs.text_template_4Slide_3)});
+                    assets.push({ "type": "data","layerName": "SCRIPT MEETING LINE 4","property": "Source Text","value": he.decode(docs.text_template_4Slide_4)});
                     break;
             }
             
             postrender=[];
             postrender.push({"module": "@nexrender/action-encode", "preset": "mp4","output": "encoded.mp4"});
-            postrender.push({"module": "@nexrender/action-copy", "input": "encoded.mp4", "output": config.output + docs[0].sub + ".mp4"});
+            postrender.push({"module": "@nexrender/action-copy", "input": "encoded.mp4", "output": config.nexrender.output + docs.sub + ".mp4"});
     
             jobjson = {};
             jobjson.template = template;
             jobjson.assets = assets;
             jobjson.actions = {};
             jobjson.actions.postrender = postrender;
-            postJob(data.sub, jobjson).then(() => {io.to(sid).emit('create_job');});
+            postJob(data.sub, jobjson).then(() => {
+                io.to(sid).emit('create_job');
+            });
         });
     });
 });
+
+module.exports = socketapi;
 
 const postJob = (sub, job) => {
     return new Promise(resolve => {
@@ -127,17 +129,17 @@ const postJob = (sub, job) => {
 
             response.on('end', () => { 
                 try {
-                    var a = JSON.parse(str)
-                    update_db('sub', sub, 'job', a).then(() => {getJobs().then(() => {resolve();})});    
+                    var a = JSON.parse(str);
+                    if (typeof a.uid !== 'null' && typeof a.uid !== 'undefined') {
+                        db.hset(sub, 'job_uid', a.uid, (err, value) => resolve());
+                    }
                 } 
                 catch(e) { 
                     logger.error('postJob res: ' + e);
-                    update_db('sub', sub, 'job', false).then(()=>{resolve();}); 
-                }
-                
+                }                
             });
         }
-        
+
         try {var a = JSON.stringify(job);} 
         catch(e) {logger.error('postJob: ' + e);}
         var req = http.request(options, hcb);
@@ -148,44 +150,3 @@ const postJob = (sub, job) => {
         req.end();
     });
 }
-
-const getJobs = () =>{
-    return new Promise(resolve => {
-        const options = {
-            method: 'GET',
-            hostname: config.nexrender.host,
-            port: config.nexrender.port,
-            path: '/api/v1/jobs',
-            headers: {
-                'nexrender-secret': config.nexrender.secret,
-                'Content-Type': 'application/json'
-            }
-        };
-
-        var hcb = (response) => {
-            var str = '';
-
-            response.on('data', (chunk) => {
-            str += chunk;
-            });
-
-            response.on('end', () => {            
-                try { 
-                    var a = JSON.parse(str);
-                    update_jobdb('sub', 'jobs', 'a', a).then(()=>{resolve();});
-                } 
-                catch(e) {logger.error('getJobs: ' + e);}            
-            });
-        }
-
-        var req = http.request(options, hcb)
-        req.on('error', (e) => {
-            logger.error('getJobs: ' + e)
-        });
-        req.end();
-    });
-}
-
-setInterval(getJobs, 10000);
-
-module.exports = socketapi;

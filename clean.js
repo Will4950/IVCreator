@@ -3,10 +3,6 @@ fs.rmdir('node_modules',{recursive:true},err=>{return;});
 fs.rmdir('backend/node_modules',{recursive:true},err=>{return;});
 fs.rmdir('frontend/node_modules',{recursive:true},err=>{return;});
 fs.rmdir('worker/node_modules',{recursive:true},err=>{return;});
-fs.rm('frontend/db/frontend.db',err=>{return;});
-fs.rm('frontend/db/job.db',err=>{return;});
-fs.rm('frontend/public/stylesheets/compiled.css',err=>{return;});
-fs.rm('frontend/public/stylesheets/compiled.css.map',err=>{return;});
 
 rmDir = function(dirPath) {
     try { var files = fs.readdirSync(dirPath); }
@@ -22,6 +18,5 @@ rmDir = function(dirPath) {
 
 rmDir('frontend/public/download');
 
-const { spawn } = require('child_process');
-var server = spawn('backend/nexrender-server-win64.exe', ['--cleanup']);
-server.stdout.on('data', data=>console.log(data.toString()));
+fs.rm('frontend/public/stylesheets/compiled.css',err=>{return;});
+fs.rm('frontend/public/stylesheets/compiled.css.map',err=>{return;});

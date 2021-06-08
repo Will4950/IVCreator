@@ -1,13 +1,12 @@
 {
   "name": "ivcreator",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "description": "IVCreator - Intro Video Creator",
   "scripts": {
     "start:frontend": "cd frontend && node frontend.js",
     "start:worker": "cd worker && node worker.js",
     "start:backend": "cd backend && node backend.js",
-    "clean:all": "node clean.js",
-    "clean:server": "cd backend && nexrender-server-win64.exe --cleanup",
+    "clean": "node clean.js",
     "install:backend": "cd backend && npm install",
     "install:worker": "cd worker && npm install",
     "install:frontend": "cd frontend && npm install"

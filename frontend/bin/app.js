@@ -34,6 +34,10 @@ const onListening = () => {
 	logger.debug('http | listening on ' + bind);
 }
 
+console.log = data => logger.debug(data);
+console.warn = data => logger.warn(data);
+console.error = data => logger.error(data);
+
 server.on('error', onError);
 server.on('listening', onListening);
 

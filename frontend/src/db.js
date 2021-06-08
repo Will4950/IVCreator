@@ -1,104 +1,131 @@
+const config = require('src/config');
 const logger = require('src/logger');
-const Datastore = require('nedb');
-const db = new Datastore({ filename: 'db/frontend.db', autoload: true });
-const jobdb = new Datastore({ filename: 'db/job.db', autoload: true });
-const fs = require('fs');
+const redis = require("redis");
+const flatten = require('flat');
+const http = require('http');
 
-const sizeCheck = () =>{
-    if (fs.statSync('db/frontend.db').size > 524288000) {
-        db.persistence.compactDatafile();
-    }
-    if (fs.statSync('db/job.db').size > 524288000) {
-        jobdb.persistence.compactDatafile();
-    }
-}
-setInterval(sizeCheck, 60000);
-
-db.on('compaction.done', () =>{
-    logger.silly('db: compaction.done');
+const db = redis.createClient({
+    url: config.redis_url
 });
 
-jobdb.on('compaction.done', () =>{
-    logger.silly('jobdb: compaction.done');
+db.on("error", function(error) {
+    logger.error('redis-error: ' + error);
 });
-
-jobdb.find({sub: 'jobs'}, (err, docs) => {
-    if (docs.length == 0){
-       jobdb.insert({sub: 'jobs'});
-    }
-})
 
 const dbmw = (req, res, next) => {
     if (req.auth){
-        var docs, job, qjobs = 0;
         const userinfo = req.userContext && req.userContext.userinfo;
         var sub = userinfo.sub;
-        var doc = require('src/doc');
-        doc['sub'] = sub;
-        
-        db.find({sub: sub}, (err, dbdocs) =>{
-            switch(dbdocs.length){
-                case 0:
-                    db.insert(doc, (err, newdoc) =>{
-                        docs = newdoc[0];
-                        job = false;
-                    });
-                    break;
-                default:
-                    docs = dbdocs[0];
-                    var obj = doc;
-                    var keys = Object.keys(obj);
-                    keys.forEach((item, index) => {
-                        if (typeof docs[item] === 'undefined'){
-                            docs[item] = obj[item];
-                            db.update({sub: sub}, {$set: {[item]: obj[item]}}, {});
-                        }
-                    })
-                    job = dbdocs[0].job;
-            }
+        db.hset(sub, 'sub', sub);
+        req.sub = sub;
 
-            jobdb.find({sub: 'jobs'}, (err, dbdocs) =>{
-                if(typeof dbdocs[0].a != 'undefined'){
-                    qjobs = dbdocs[0].a.reduce((n, x) => n + (x.state === 'queued'), 0);
-                    if (job) {                      
-                        job = dbdocs[0].a.filter(c => c.uid === job.uid)[0];
+        var doc = flatten(require('src/doc'));
+        for (const [key,val] of Object.entries(doc)) {
+            try{
+                db.hget(sub, key, (err, value) => { 
+                    if (value === null) {
+                        logger.debug('add: ' + sub + ' | ' + key);
+                        db.hset(sub, key, val);      
                     }
-                }                
-                req.sub = sub; 
-                req.docs = docs; 
-                req.qjobs = qjobs; 
-                req.job = job;
-                next();
-            });
-        });
+                });
+            }
+            catch(e) {logger.error(e);}            
+        } 
+
+        db.hgetall(sub, (err, value) => {
+            req.docs = value;
+            getJob(value.job_uid).then((data) => {
+                if (typeof data !== 'undefined'){
+                    req.docs.job = {};
+                    req.docs.job.state = data.state;
+                    req.docs.job.renderProgress = data.renderProgress;
+                }
+                getJobs().then((data) => {
+                    req.qjobs = data.reduce((n, x) => n + (x.state === 'queued'), 0);
+                    next();
+                }); 
+            });                      
+        });          
     } 
     else {
         next();
     }
 }
 
-const update_db = (val1, val2, val3, val4) => {
+module.exports = {dbmw, db};
+
+const getJobs = () =>{
     return new Promise(resolve => {
-        db.update({[val1]: val2}, {$set: {[val3]: val4}}, {}, (err, numrep) => {
-            resolve();
+        const options = {
+            method: 'GET',
+            hostname: config.nexrender.host,
+            port: config.nexrender.port,
+            path: '/api/v1/jobs',
+            headers: {
+                'nexrender-secret': config.nexrender.secret,
+                'Content-Type': 'application/json'
+            }
+        };
+
+        var hcb = (response) => {
+            var str = '';
+
+            response.on('data', (chunk) => {
+            str += chunk;
+            });
+
+            response.on('end', () => {            
+                try { 
+                    var a = JSON.parse(str);
+                    resolve(a);
+                } 
+                catch(e) {logger.error('getJobs: ' + e);}            
+            });
+        }
+
+        var req = http.request(options, hcb)
+        req.on('error', (e) => {
+            logger.error('getJobs: ' + e)
         });
+        req.end();
     });
 }
 
-const update_jobdb = (val1, val2, val3, val4) => {
+const getJob = (uid) =>{
     return new Promise(resolve => {
-        jobdb.update({[val1]: val2}, {$set: {[val3]: val4}}, {}, (err, numrep) => {
-            resolve();
+        const options = {
+            method: 'GET',
+            hostname: config.nexrender.host,
+            port: config.nexrender.port,
+            path: '/api/v1/jobs/' + uid,
+            headers: {
+                'nexrender-secret': config.nexrender.secret,
+                'Content-Type': 'application/json'
+            }
+        };
+
+        var hcb = (response) => {
+            var str = '';
+
+            response.on('data', (chunk) => {
+            str += chunk;
+            });
+
+            response.on('end', () => {            
+                try { 
+                    var a = JSON.parse(str);
+                    resolve(a);
+                } 
+                catch(e) {
+                    resolve('{}');
+                }            
+            });
+        }
+
+        var req = http.request(options, hcb)
+        req.on('error', (e) => {
+            logger.error('getJob: ' + e)
         });
+        req.end();
     });
 }
-
-const db_find = (val1) => {
-    return new Promise(resolve => {
-        db.find({sub: val1}, (err, docs) => {
-            resolve(docs);
-        });
-    });
-}
-
-module.exports = {dbmw, update_db, update_jobdb, db_find};

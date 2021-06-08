@@ -3,13 +3,14 @@ require('dotenv').config();
 var config = {};
 config.port = process.env.PORT || '9393';
 config.host = process.env.HOST || '0.0.0.0';
-config.secret = process.env.SECRET || 'ivrcreatorivr1324;1324kafg/adsfkjjk94creatorasdfivrcKJHDFJKHGJhblkassdreatorivrcreatorasdfivrcreator';
-config.output = process.env.OUTPUT || 'd:/';
+config.redis_url = process.env.REDIS_URL || 'redis://localhost:6379';
+config.secret = process.env.SECRET || 'ivcreatorsecret';
 
 config.nexrender = {};
-config.nexrender.host = process.env.NEXRENDER_HOST || 'localhost'
+config.nexrender.host = process.env.NEXRENDER_HOST || 'http://localhost'
 config.nexrender.port = process.env.NEXRENDER_PORT || '9292';
 config.nexrender.secret = process.env.NEXRENDER_SECRET || 'ivcreator';
+config.nexrender.output = process.env.NEXRENDER_OUTPUT || 'd:/';
 
 config.okta = {};
 config.okta.org_url = process.env.OKTA_ORG_URL;

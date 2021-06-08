@@ -1,6 +1,6 @@
 {
   "name": "ivcreator-backend",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Intro Video Creator",
   "main": "backend.js",
   "scripts": {
@@ -17,6 +17,11 @@
   },
   "homepage": "https://github.com/Will4950/IVCreator#readme",
   "dependencies": {
-    "dotenv": "^9.0.0"
+    "@nexrender/database-redis": "^1.28.0",
+    "@nexrender/server": "^1.28.1",
+    "dotenv": "^9.0.0",
+    "express": "^4.17.1",
+    "express-winston": "^4.1.0",
+    "winston": "^3.3.3"
   }
 }

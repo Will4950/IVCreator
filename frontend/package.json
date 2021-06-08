@@ -1,6 +1,6 @@
 {
   "name": "ivcreator-frontened",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "description": "Intro Video Creator",
   "main": "frontend.js",
   "scripts": {
@@ -29,10 +29,11 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "express-winston": "^4.1.0",
+    "flat": "^5.0.2",
     "he": "^1.2.0",
     "jquery": "^3.6.0",
-    "nedb": "^1.8.0",
     "pug": "^3.0.2",
+    "redis": "^3.1.2",
     "sharp": "^0.28.2",
     "socket.io": "^4.1.2",
     "winston": "^3.3.3"

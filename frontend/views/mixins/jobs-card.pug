@@ -2,33 +2,30 @@
     h3#jobheader.bg-danger.text-white.rounded.shadow.mb-2.py-1 #{qjobs} jobs in queue
     div.mt-4
         h4#jobstatus
-            if job  
-                if job.state 
-                    | Job Status: #{job.state}
-            else 
-                | Job Status: no job                
+            if docs.job_uid   
+                | Job Status: #{docs.job.state}
+            else
+                | Job Status: no job
     div
         p#jobid
-            if job 
-                if job.uid 
-                    | Job id: [#{job.uid}]
+            if docs.job_uid 
+                | Job id: [#{docs.job_uid}]
             else 
                 | Job id: [no job]
     .mb-3.px-2.mt-3
         center
             .progress.pbar
-                if job
-                    if job.state
-                        if job.state === 'finished'
-                                #progress.progress-bar.progress-bar-striped.progress-bar-animated.bg-success.w-100(role='progressbar')
-                                    #progval.me-1(style='text-align: right;') complete
-                        else if job.renderProgress
-                            if job.renderProgress == 100
-                                #progress.progress-bar.progress-bar-striped.progress-bar-animated.bg-warning.w-100(role='progressbar')
-                                            #progval.me-1(style='text-align: right;') encoding
-                            else if job.renderProgress
-                                #progress.progress-bar.progress-bar-striped.progress-bar-animated.bg-success(role='progressbar' style='width: ' + job.renderProgress + '%;')
-                                    #progval.me-1(style='text-align: right;') #{job.renderProgress}%
+                if docs.job.state
+                    if docs.job.state === 'finished'
+                            #progress.progress-bar.progress-bar-striped.progress-bar-animated.bg-success.w-100(role='progressbar')
+                                #progval.me-1(style='text-align: right;') complete
+                    else if docs.job.renderProgress
+                        if docs.job.renderProgress == 100
+                            #progress.progress-bar.progress-bar-striped.progress-bar-animated.bg-warning.w-100(role='progressbar')
+                                        #progval.me-1(style='text-align: right;') encoding
+                        else if docs.job.renderProgress
+                            #progress.progress-bar.progress-bar-striped.progress-bar-animated.bg-success(role='progressbar' style='width: ' + docs.job.renderProgress + '%;')
+                                #progval.me-1(style='text-align: right;') #{docs.job.renderProgress}%
                 else 
                     #progress.progress-bar.progress-bar-striped.progress-bar-animated.bg-warning.w-100(role='progressbar')
                         #progval.me-1(style='text-align: right;') no job

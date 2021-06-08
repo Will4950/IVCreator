@@ -1,6 +1,6 @@
 {
   "name": "ivcreator-worker",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Intro Video Creator",
   "main": "worker.js",
   "scripts": {
@@ -17,6 +17,10 @@
   },
   "homepage": "https://github.com/Will4950/IVCreator#readme",
   "dependencies": {
-    "dotenv": "^9.0.2"
+    "@nexrender/action-copy": "^1.24.2",
+    "@nexrender/action-encode": "^1.26.3",
+    "@nexrender/worker": "^1.28.0",
+    "dotenv": "^9.0.2",
+    "winston": "^3.3.3"
   }
 }

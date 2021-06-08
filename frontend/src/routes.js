@@ -6,7 +6,7 @@ const {oidc} = require('src/auth');
 const logger = require('src/logger');
 
 const reqrender = (template, req, res) => {
-    res.render(template, {auth: req.auth, sub: req.sub, download: req.download, docs: req.docs, qjobs: req.qjobs, job: req.job});
+    res.render(template, {auth: req.auth, sub: req.sub, download: req.download, docs: req.docs, qjobs: req.qjobs});
 }
 
 router.get('/', (req, res) => {
