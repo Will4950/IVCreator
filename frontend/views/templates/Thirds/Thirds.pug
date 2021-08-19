@@ -1,0 +1,24 @@
+extends ../../mixins/layout.pug
+block main
+    .d-flex.flex-column.align-items-center.shadow.mb-2.px-2.rounded-3
+        .px-1.pt-2
+            h1.display-4.fw-bold 
+                i.fas.fa-photo-video.pe-1
+                | Lower Thirds
+        .text-center.px-2 
+            p.lead.mb-4
+                | A lower thirds name animation.
+                br
+                br
+                i.far.fa-hourglass.pe-2 
+                | Full job: ~1min
+            .px-2.pb-2
+                video.rounded-3.shadow.img-fluid(src='Welcome.mp4' width='700' height='394' type='video/mp4' autoplay muted loop playsinline)
+            .px-2.py-3.rounded-3.shadow.bg-light  
+                h3.fw-bold.text-center 
+                    i.fas.fa-cogs.pe-2
+                    |  Template Settings
+                .d-flex.flex-wrap.flex-row.justify-content-evenly.mb-2.gap-2
+                    each val in [1,2]
+                        include Thirds-card-text   
+        include Thirds-job.pug

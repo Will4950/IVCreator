@@ -1,6 +1,6 @@
 {
   "name": "ivcreator",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "IVCreator - Intro Video Creator",
   "scripts": {
     "start:frontend": "cd frontend && node frontend.js",

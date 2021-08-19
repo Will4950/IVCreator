@@ -15,13 +15,10 @@ const getJobs = () =>{
                 'Content-Type': 'application/json'
             }
         };
-
         var hcb = (response) => {
             var str = '';
 
-            response.on('data', (chunk) => {
-            str += chunk;
-            });
+            response.on('data', (chunk) => {str += chunk;});
 
             response.on('end', () => {            
                 try { 
@@ -31,11 +28,8 @@ const getJobs = () =>{
                 catch(e) {logger.error('getJobs: ' + e);}            
             });
         }
-
         var req = http.request(options, hcb)
-        req.on('error', (e) => {
-            logger.error('getJobs: ' + e)
-        });
+        req.on('error', (e) => {logger.error('getJobs: ' + e)});
         req.end();
     });
 }
@@ -52,29 +46,19 @@ const getJob = (uid) =>{
                 'Content-Type': 'application/json'
             }
         };
-
         var hcb = (response) => {
             var str = '';
-
-            response.on('data', (chunk) => {
-            str += chunk;
-            });
-
+            response.on('data', (chunk) => {str += chunk;});
             response.on('end', () => {            
                 try { 
                     var a = JSON.parse(str);
                     resolve(a);
                 } 
-                catch(e) {
-                    resolve('{}');
-                }            
+                catch(e) {resolve('{}');}            
             });
         }
-
         var req = http.request(options, hcb)
-        req.on('error', (e) => {
-            logger.error('getJob: ' + e)
-        });
+        req.on('error', (e) => {logger.error('getJob: ' + e)});
         req.end();
     });
 }
@@ -91,14 +75,9 @@ const postJob = (sub, job) => {
                 'Content-Type': 'application/json'
             }
         };
-
         var hcb = (response) => {
             var str = '';
-
-            response.on('data', (chunk) => {
-            str += chunk;
-            });
-
+            response.on('data', (chunk) => {str += chunk;});
             response.on('end', () => { 
                 try {
                     var a = JSON.parse(str);
@@ -106,18 +85,13 @@ const postJob = (sub, job) => {
                         db.hset(sub, 'job_uid', a.uid, (err, value) => resolve());
                     }
                 } 
-                catch(e) { 
-                    logger.error('postJob res: ' + e);
-                }                
+                catch(e) {logger.error('postJob res: ' + e);}                
             });
         }
-
         try {var a = JSON.stringify(job);} 
         catch(e) {logger.error('postJob: ' + e);}
         var req = http.request(options, hcb);
-        req.on('error', (e) => {
-            logger.error('postJob: ' + e)
-        });    
+        req.on('error', (e) => {logger.error('postJob: ' + e)});    
         req.write(a);    
         req.end();
     });

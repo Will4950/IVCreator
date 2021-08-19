@@ -58,9 +58,15 @@ io.on('connection', (socket) => {
                     break;
                 case 'SS': template  = {"src": config.template_SS, "composition": "Comp 1"}
                     break;
+                case 'Thirds': template  = {"src": config.template_Thirds, "composition": "Render"}
+                    break;
             }
             assets = [];
             switch(data.template){
+                case 'Thirds':
+                    assets.push({ "type": "data","layerName": "SCRIPT TEXT 1","property": "Source Text","value": he.decode(docs.text_template_Thirds_1)});
+                    assets.push({ "type": "data","layerName": "SCRIPT TEXT 2","property": "Source Text","value": he.decode(docs.text_template_Thirds_2)});
+                    break;
                 case 'Welcome':
                     assets.push({"src": docs.file_template_Welcome_1, "type": "image","layerName": "SCRIPT IMAGE 1"});
                     break;

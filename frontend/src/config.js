@@ -23,5 +23,6 @@ config.template_4Slide = process.env.TEMPLATE_4Slide;
 config.template_4Slide_alt = process.env.TEMPLATE_4Slide_alt; 
 config.template_Welcome = process.env.TEMPLATE_WELCOME; 
 config.template_SS = process.env.TEMPLATE_SS;
+config.template_Thirds = process.env.TEMPLATE_THIRDS;
 
 module.exports = config;
